@@ -1,21 +1,14 @@
-// app/index.tsx
-import React from 'react';
-import { StyleSheet, SafeAreaView } from 'react-native';
-import Home from '../home'; 
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import LoginScreen from '../Screens/Login';
+import HomeScreen from '../Screens/home';
 
-const App = () => {
-  return (
-    <SafeAreaView style={styles.container}>
-      <Home />
-    </SafeAreaView>
-  );
-};
+const Stack = createNativeStackNavigator();
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f9f9f9',
-  },
-});
+const AppNavigator = () => (
+  <Stack.Navigator initialRouteName="Login">
+    <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
+    <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
+  </Stack.Navigator>
+);
 
-export default App;
+export default AppNavigator;

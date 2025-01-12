@@ -2,10 +2,10 @@ import React from 'react';
 import { StyleSheet, View, Text, TextInput, FlatList, TouchableOpacity, Image, Dimensions } from 'react-native';
 
 const categories = [
-  { id: '1', name: 'Fruits', image: require('../assets/images/Fruits.jpeg') },
-  { id: '2', name: 'Vegetables', image: require('../assets/images/Vegies.jpeg') },
-  { id: '3', name: 'Grains', image: require('../assets/images/Grains.jpeg') },
-  { id: '4', name: 'Dairy', image: require('../assets/images/Dairy.jpeg') },
+  { id: '1', name: 'Fruits', image: require('../../assets/images/Fruits.jpeg') },
+  { id: '2', name: 'Vegetables', image: require('../../assets/images/Vegies.jpeg') },
+  { id: '3', name: 'Grains', image: require('../../assets/images/Grains.jpeg') },
+  { id: '4', name: 'Dairy', image: require('../../assets/images/Dairy.jpeg') },
 ];
 
 const numColumns = 2; // 2x2 grid layout
