@@ -88,7 +88,7 @@ package-lock.json
    
    For Backend:
    ```bash
-   cd Farm-Bridge-Frontend
+   cd Backend
    ```
    
    Install dependencies:
