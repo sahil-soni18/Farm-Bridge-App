@@ -80,7 +80,18 @@ package-lock.json
    git clone https://github.com/<username>/farm-bridge.git
    cd farm-bridge
    ```
-2. Install dependencies:
+   
+2. For go to Frontend:
+   ```bash
+   cd Farm-Bridge-Frontend
+   ```
+   
+   For Backend:
+   ```bash
+   cd Farm-Bridge-Frontend
+   ```
+   
+   Install dependencies:
    ```bash
    npm install
    ```
