@@ -1,33 +1,43 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { StyleSheet, View, Text, FlatList, Image, Dimensions } from 'react-native';
 import { ProductContext } from '../(tabs)/context/ProductContext'; // Adjust the path as needed
+import { RouteProp, useRoute } from '@react-navigation/native';
+import { imageMapping } from './AdminScreen'; // Adjust the path as needed
 
 const screenWidth = Dimensions.get('window').width;
 
-const FruitsScreen = () => {
-  const { products } = useContext(ProductContext); // Access products from context
+const ProductScreen = () => {
+  const { products } = useContext(ProductContext);
+  const route = useRoute<RouteProp<{ params: { category: string } }, 'params'>>();
+  const category = route.params.category;
+
+  const categoryProducts = products[category] || []; // Safely access the products of the selected category
+  useEffect(() => {
+    console.log("Category Products: " + JSON.stringify(categoryProducts));
+    console.log("Image URI: " , "../../assets/images/apple.jpg")
+  }, [products])
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Fruits</Text>
+      <Text style={styles.title}>{category}</Text>
       <FlatList
-        data={products.Fruits} // Display fruits from the global state
+        data={categoryProducts}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <View style={styles.productCard}>
             {item.image ? (
               <Image
-                source={{ uri: item.image }} // Ensure image is passed as an object with a `uri` key
+                source={imageMapping[item.image]}
                 style={styles.productImage}
               />
             ) : (
               <Image
-                source={require('../../assets/images/apple.jpg')} // Use a local placeholder image
+                source={require('../../assets/images/Placeholder.jpg')} // Use a placeholder image
                 style={styles.productImage}
               />
             )}
             <Text style={styles.productName}>{item.name}</Text>
-            <Text style={styles.productPrice}>{item.price}</Text>
+            <Text style={styles.productPrice}>₹{item.price}</Text>
             <Text style={styles.productQuantity}>{item.quantity}</Text>
           </View>
         )}
@@ -87,4 +97,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default FruitsScreen;
+export default ProductScreen;

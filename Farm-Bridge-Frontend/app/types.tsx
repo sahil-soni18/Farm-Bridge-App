@@ -1,7 +1,6 @@
-// types.ts
 export type RootStackParamList = {
-    Login: undefined;
-    Home: undefined;
-    Admin: undefined;
-    Product: undefined; // Add this
-  };
+  Login: undefined;  // Login screen, no parameters expected
+  Home: undefined;   // Home screen, no parameters expected
+  Admin: undefined;  // Admin screen, no parameters expected
+  Product: { category?: string }; // Product screen, optional 'category' parameter
+};
