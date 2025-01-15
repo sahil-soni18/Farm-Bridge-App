@@ -81,7 +81,7 @@ package-lock.json
    cd farm-bridge
    ```
 
-  Install dependencies:
+   Install dependencies:
 
    
 2. For go to Frontend:
@@ -95,7 +95,7 @@ package-lock.json
    ```
    
    Install dependencies:
->>>>>>> 7a86ddac35fc6717722928191dadedde0fcf467f
+
    ```bash
    npm install
    ```
