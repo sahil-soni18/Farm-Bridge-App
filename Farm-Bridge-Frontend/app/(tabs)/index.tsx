@@ -9,7 +9,7 @@ import ExploreProductsScreen from '../Screens/ExploreProductsScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const AppNavigator = () => (
-  <Stack.Navigator initialRouteName="ExploreProducts">
+  <Stack.Navigator initialRouteName="Login">
     <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
     <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
     <Stack.Screen name="Admin" component={AdminScreen} options={{ headerShown: false }} />
