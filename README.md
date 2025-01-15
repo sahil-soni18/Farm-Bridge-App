@@ -80,9 +80,9 @@ package-lock.json
    git clone https://github.com/<username>/farm-bridge.git
    cd farm-bridge
    ```
-<<<<<<< HEAD
-2. Install dependencies:
-=======
+
+  Install dependencies:
+
    
 2. For go to Frontend:
    ```bash
@@ -101,7 +101,7 @@ package-lock.json
    ```
 3. Start the development server:
    ```bash
-   npm start
+   npx expo start
    ```
 
 ### **Backend Setup (To Be Added)**
