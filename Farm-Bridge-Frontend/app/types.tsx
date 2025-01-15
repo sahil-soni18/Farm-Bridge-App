@@ -4,4 +4,5 @@ export type RootStackParamList = {
   Home: undefined;   // Home screen, no parameters expected
   Admin: undefined;  // Admin screen, no parameters expected
   Product: { category?: string }; // Product screen, optional 'category' parameter
+  ExploreProducts: undefined;
 };
