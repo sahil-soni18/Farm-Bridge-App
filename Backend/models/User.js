@@ -1,5 +1,6 @@
-import sequelize from '../db/db.js';
+// Import the built-in data types
 import { DataTypes } from 'sequelize';
+import sequelize from '../db/db.js';
 
 const User = sequelize.define(
   'User',
@@ -9,7 +10,7 @@ const User = sequelize.define(
       defaultValue: DataTypes.UUIDV4,
       primaryKey: true,
     },
-    name: { 
+    name: {
       type: DataTypes.STRING,
       allowNull: false,
     },
@@ -17,24 +18,22 @@ const User = sequelize.define(
       type: DataTypes.STRING,
       allowNull: false,
       unique: true,
-      validate: { isEmail: true }, 
+      validate: { isEmail: true },
     },
-    password: { 
+    password: {
       type: DataTypes.STRING,
       allowNull: false,
     },
     isFarmer: {
-        type: DataTypes.BOOLEAN,
-        defaultValue: false,
-      },
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
   },
   {
     modelName: 'User',
     tableName: 'users',
-    timestamps: true, 
+    timestamps: true,
   }
 );
-
-
 
 export default User;

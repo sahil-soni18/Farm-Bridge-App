@@ -1,32 +1,39 @@
-import sequelize from "../db/db";
+// Import the built-in data types
+import { DataTypes } from 'sequelize';
+import sequelize from '../db/db.js';
+import User from './User.js';
 
 const FarmerProfile = sequelize.define(
-    'FarmerProfile',
-    {
-      _id: {
-        type: DataTypes.UUID,
-        defaultValue: DataTypes.UUIDV4,
-        primaryKey: true,
-      },
-      farm_location: {
-        type: DataTypes.STRING,
-        allowNull: true,
-      },
-      products_grown: {
-        type: DataTypes.STRING,
-        allowNull: true,
+  'FarmerProfile',
+  {
+    user_id: {
+      type: DataTypes.UUID,
+      allowNull: false,
+      primaryKey: true,
+      references: {
+        model: User,
+        key: '_id',
       },
     },
-    {
-      modelName: 'FarmerProfile',
-      tableName: 'farmer_profiles',
-      timestamps: true,
-    }
-  );
-  
-  // Association
-  User.hasOne(FarmerProfile, { foreignKey: '_id' });
-  FarmerProfile.belongsTo(User, { foreignKey: '_id' });
-  
-  export default FarmerProfile;
-  
+    farm_location: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    products_grown: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+  },
+  {
+    modelName: 'FarmerProfile',
+    tableName: 'farmer_profiles',
+    timestamps: true,
+  }
+);
+
+
+// Association
+User.hasOne(FarmerProfile, { foreignKey: 'user_id' });
+FarmerProfile.belongsTo(User, { foreignKey: 'user_id' });
+
+export default FarmerProfile;
