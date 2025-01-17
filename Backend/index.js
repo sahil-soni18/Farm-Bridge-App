@@ -1,5 +1,6 @@
 import express from 'express';
 import pool from './db/db.js';
+import authRoutes from './routes/authRoutes.js';
 
 const app = express();
 const PORT = 3000;
@@ -18,6 +19,8 @@ app.get('/api/test-db', async (req, res) => {
         
     }
 })
+
+app.use('/api/auth', authRoutes);
 
 
 app.listen(PORT, () => {
