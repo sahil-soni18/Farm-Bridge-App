@@ -112,3 +112,20 @@ export const Login = async (req, res) => {
         res.status(500).json({ error: 'Something went wrong' });
     }
 }
+
+// Logout
+
+export const Logout = async (req, res) => {
+    try {
+        // Clear the 'access-token' cookie
+        res.clearCookie('access-token');
+
+        // Optionally, you can also perform additional cleanup if needed
+        // For example, you might want to invalidate the token on the server side
+        // if you are using a token blacklist or similar mechanism.
+
+        res.status(200).json({ message: "User logged out successfully!" });
+    } catch (error) {
+        res.status(500).json({ error: 'Something went wrong' });
+    }
+};
