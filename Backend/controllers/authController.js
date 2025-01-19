@@ -41,7 +41,7 @@ export const Signup = async (req, res) => {
 
             await FarmerProfile.create(
                 {
-                    user_id: newUser._id,
+                    userId: newUser._id,
                     farm_location,
                     products_grown,
                 },

@@ -6,7 +6,7 @@ import User from './User.js';
 const FarmerProfile = sequelize.define(
   'FarmerProfile',
   {
-    user_id: {
+    userId: {
       type: DataTypes.UUID,
       allowNull: false,
       primaryKey: true,
