@@ -6,6 +6,7 @@ import ProductScreen from '../Screens/ProductScreen'; // Import the new screen
 import SignUpScreen from '../Screens/SignUp';
 import { RootStackParamList } from '../types';
 import ExploreProductsScreen from '../Screens/ExploreProductsScreen';
+import ProductDetailsScreen from '../Screens/ProductDetailsScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const AppNavigator = () => (
@@ -16,6 +17,7 @@ const AppNavigator = () => (
     <Stack.Screen name="Product" component={ProductScreen} options={{ headerShown: false }} />
     <Stack.Screen name="Register" component={SignUpScreen} options={{ headerShown: false }} />
     <Stack.Screen name="ExploreProducts" component={ExploreProductsScreen} options={{ headerTitle: 'Explore Products' }}/>
+    <Stack.Screen name="ProductDetails" component={ProductDetailsScreen} options={{ headerTitle: 'Product Details' }}/>
   </Stack.Navigator>
 );
 
