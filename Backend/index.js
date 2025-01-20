@@ -3,6 +3,8 @@ import pool from './db/db.js';
 import authRoutes from './routes/authRoutes.js';
 import userRouter from './routes/userRoutes.js';
 
+import productRoutes from './routes/productRoutes.js';
+
 const app = express();
 const PORT = 3000;
 
@@ -23,6 +25,7 @@ app.get('/api/test-db', async (req, res) => {
 
 app.use('/api/auth', authRoutes);
 app.use('/api/user', userRouter)
+app.use('/produce', productRoutes);
 
 
 app.listen(PORT, () => {

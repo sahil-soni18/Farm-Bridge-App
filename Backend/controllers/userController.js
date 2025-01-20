@@ -42,3 +42,33 @@ export const updateUserDetails = async (req, res) => {
     res.status(500).json({ message: 'Something went wrong.', error });
   }
 };
+
+
+// Get Profile
+export const getProfile = async (req, res) => {
+  const { userId } = req.user;
+
+  try {
+    // Fetch user without password
+    const user = await User.findByPk(userId, {
+      attributes: { exclude: ['password'] }, // Exclude the password field
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found.' });
+    }
+
+    // Fetch farmer profile if user is a farmer
+    const farmerProfile = await FarmerProfile.findOne({ where: { userId } });
+
+    if (farmerProfile) {
+      res.status(200).json({ user, farmerProfile });
+    } else {
+      res.status(200).json({ user });
+    }
+
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ message: 'Server Error' });
+  }
+};
