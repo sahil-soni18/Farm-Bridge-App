@@ -33,7 +33,7 @@ const FarmerProfile = sequelize.define(
 
 
 // Association
-User.hasOne(FarmerProfile, { foreignKey: 'user_id' });
-FarmerProfile.belongsTo(User, { foreignKey: 'user_id' });
+User.hasOne(FarmerProfile, { foreignKey: 'userId' });
+FarmerProfile.belongsTo(User, { foreignKey: 'userId' });
 
 export default FarmerProfile;
