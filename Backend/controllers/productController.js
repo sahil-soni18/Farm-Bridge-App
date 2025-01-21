@@ -7,11 +7,11 @@ import User from '../models/User.js'; // Import the User model
 export const createProduct = async (req, res) => {
     console.log('Creating Product, req.user is: ' + req.user);
   const { userId } = req.user; // Extract userId from authenticated user
-  const { name, price, quantity, description } = req.body;
+  const { name, category, price, quantity, description } = req.body;
 
   try {
     // Validate input
-    if (!name || !price || !quantity) {
+    if (!name || !category || !price || !quantity) {
       return res.status(400).json({ message: 'Name, price, and quantity are required.' });
     }
 
@@ -30,6 +30,7 @@ export const createProduct = async (req, res) => {
     // Create the product
     const product = await Product.create({
       name,
+      category,
       price,
       quantity,
       description,
@@ -56,4 +57,102 @@ export const getAllProducts = async ( req, res ) => {
         console.error( err );
         res.status(500).json({ message: 'Something went wrong'});
     }
+}
+
+// Get Product By Farmer Id
+
+export const getProductById =  async ( req, res ) => {
+  const { userId, isFarmer } = req.user;
+
+  try {
+    if ( isFarmer ) {
+      const product = await Product.findAll( {
+        where: {
+          user_id: userId,
+        }
+      });
+      if ( product ) {
+        res.json(product);
+      }
+    } else {
+      res.status(403).json({ message: 'Only farmers are allowed to view their products.' });
+    }
+  } catch ( err ) {
+    console.error( err );
+    res.status(500).json({ message: 'Something went wrong.' });
+  }
+}
+
+
+// Get Products By Category
+
+export const getProductByCategory = async (req, res) => {
+  const { category } = req.params;
+
+  try {
+    const products = await Product.findAll( {
+      where: {
+        category: category
+      }
+    });
+    if ( products ) {
+      res.json(products);
+    } else {
+      res.status(404).json({ message: 'No products found for the given category.' });
+    }
+  } catch ( error ) {
+    console.error(error);
+    res.status(500).json({ message: 'Something went wrong.' });
+  }
+}
+
+// Update Product
+
+export const updateProduct = async ( req, res ) => {
+  const { userId, isFarmer } = req.user;
+  const { productId } = req.params;
+  const { name, category, price, quantity, description } = req.body;
+
+  try {
+    if ( isFarmer ) {
+      const product = await Product.findByPk( productId);
+      if (!product ) {
+        return res.status(404).json({ message: 'Product not found.' });
+      }
+      if ( product.user_id === userId ) {
+        await product.update({ name, category, price, quantity, description });
+        res.json({ message: 'Product updated successfully.' });
+      } else {
+        res.status(403).json({ message: 'Only the product owner can update the product.' });
+      }
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Something went wrong.' });
+  }
+}
+
+// Delete Product
+
+export const deleteProduct = async (req, res ) => {
+  const { userId, isFarmer } = req.user;
+  const { productId } = req.params;
+
+  try {
+    if ( isFarmer ) {
+      const product = await Product.findByPk( productId);
+      if (!product ) {
+        return res.status(404).json({ message: 'Product not found.' });
+      }
+      if ( product.user_id === userId ) {
+        await product.destroy();
+        res.json({ message: 'Product deleted successfully.' });
+      } else {
+        res.status(403).json({ message: 'Only the product owner can delete the product.' });
+      }
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Something went wrong.' });
+  }
 }

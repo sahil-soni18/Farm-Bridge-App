@@ -11,7 +11,7 @@ const Cart = sequelize.define(
       defaultValue: DataTypes.UUIDV4,
       primaryKey: true,
     },
-    user_id: {
+    userId: {
       type: DataTypes.UUID,
       allowNull: false,
       references: {
@@ -41,8 +41,8 @@ const Cart = sequelize.define(
   }
 );
 
-User.hasMany(Cart, { foreignKey: "user_id" });
-Cart.belongsTo(User, { foreignKey: "user_id" });
+User.hasMany(Cart, { foreignKey: "userId" });
+Cart.belongsTo(User, { foreignKey: "userId" });
 Product.hasMany(Cart, { foreignKey: "product_id" });
 Cart.belongsTo(Product, { foreignKey: "product_id" });
 

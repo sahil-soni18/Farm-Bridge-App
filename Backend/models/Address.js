@@ -10,7 +10,7 @@ const Address = sequelize.define(
       defaultValue: DataTypes.UUIDV4,
       primaryKey: true,
     },
-    user_id: {
+    userId: {
       type: DataTypes.UUID,
       allowNull: false,
       references: {
@@ -47,7 +47,7 @@ const Address = sequelize.define(
   }
 );
 
-User.hasMany(Address, { foreignKey: "user_id" });
-Address.belongsTo(User, { foreignKey: "user_id" });
+User.hasMany(Address, { foreignKey: "userId" });
+Address.belongsTo(User, { foreignKey: "userId" });
 
 export default Address;
