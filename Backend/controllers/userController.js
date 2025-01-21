@@ -3,7 +3,7 @@ import FarmerProfile from '../models/Farmer.js';
 
 export const updateUserDetails = async (req, res) => {
   const { userId } = req.user; // Extract userId from authenticated user
-  const { name, email, password, farm_location, products_grown } = req.body;
+  const { name, email, password } = req.body;
 
   try {
     // Fetch the user from the database
@@ -22,6 +22,7 @@ export const updateUserDetails = async (req, res) => {
 
     // If the user is a farmer, update FarmerProfile
     if (user.isFarmer) {
+      const { farm_location, products_grown } = req.body;
       let farmerProfile = await FarmerProfile.findOne({ where: { userId } });
 
       if (!farmerProfile) {
@@ -72,3 +73,5 @@ export const getProfile = async (req, res) => {
     res.status(500).json({ message: 'Server Error' });
   }
 };
+
+

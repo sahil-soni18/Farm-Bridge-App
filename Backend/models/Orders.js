@@ -10,7 +10,7 @@ const Order = sequelize.define(
       defaultValue: DataTypes.UUIDV4,
       primaryKey: true,
     },
-    user_id: {
+    userId: {
       type: DataTypes.UUID,
       allowNull: false,
       references: {
@@ -35,7 +35,7 @@ const Order = sequelize.define(
   }
 );
 
-User.hasMany(Order, { foreignKey: "user_id" });
-Order.belongsTo(User, { foreignKey: "user_id" });
+User.hasMany(Order, { foreignKey: "userId" });
+Order.belongsTo(User, { foreignKey: "userId" });
 
 export default Order;
