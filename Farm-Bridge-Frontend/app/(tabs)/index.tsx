@@ -8,6 +8,10 @@ import { RootStackParamList } from '../types';
 import ExploreProductsScreen from '../Screens/ExploreProductsScreen';
 import ProductDetailsScreen from '../Screens/ProductDetailsScreen';
 import CartScreen from '../Screens/CartScreen';
+import ProfileScreen from '../Screens/ProfileScreen';
+import OrderHistoryScreen from '../Screens/OrderHistoryScreen';
+import OrderDetailsScreen from '../Screens/OrderDetailsScreen'; // Import the OrderDetails screen
+
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const AppNavigator = () => (
@@ -20,6 +24,9 @@ const AppNavigator = () => (
     <Stack.Screen name="ExploreProducts" component={ExploreProductsScreen} options={{ headerTitle: 'Explore Products' }}/>
     <Stack.Screen name="ProductDetails" component={ProductDetailsScreen} options={{ headerTitle: 'Product Details' }}/>
     <Stack.Screen name="Cart" component={CartScreen} options={{ headerTitle: 'Cart' }}/>
+    <Stack.Screen name="Profile" component={ProfileScreen} options={{ headerTitle: 'Profile' }}/>
+    <Stack.Screen name="OrderHistory" component={OrderHistoryScreen} options={{ headerTitle: 'OrderHistory' }}/>
+    <Stack.Screen name="OrderDetails" component={OrderDetailsScreen} options={{ headerTitle: 'OrderDetails' }}/>
   </Stack.Navigator>
 );
 

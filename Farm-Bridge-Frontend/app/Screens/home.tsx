@@ -3,6 +3,7 @@ import { StyleSheet, View, Text, TextInput, FlatList, TouchableOpacity, Image, D
 import { useNavigation } from '@react-navigation/native';
 import { RootStackParamList } from '../types';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { Ionicons } from '@expo/vector-icons'; // Import an icon library
 
 const categories = [
   { id: '1', name: 'Fruits', image: require('../../assets/images/Fruits.jpeg'), screen: 'Product', category: 'Fruits' },
@@ -10,7 +11,6 @@ const categories = [
   { id: '3', name: 'Grains', image: require('../../assets/images/Grains.jpeg'), screen: 'Product', category: 'Grains' },
   { id: '4', name: 'Dairy', image: require('../../assets/images/Dairy.jpeg'), screen: 'Product', category: 'Dairy' },
 ] as const;
-
 
 const numColumns = 2;
 const screenWidth = Dimensions.get('window').width;
@@ -25,11 +25,21 @@ const Home = () => {
 
   return (
     <View style={styles.container}>
+      {/* Header with Profile Button */}
       <View style={styles.header}>
-        <Text style={styles.title}>FarmBridge</Text>
-        <Text style={styles.subtitle}>Connecting Farmers with Buyers</Text>
+        <View style={styles.headerLeft}>
+          <Text style={styles.title}>FarmBridge</Text>
+          <Text style={styles.subtitle}>Connecting Farmers with Buyers</Text>
+        </View>
+        <TouchableOpacity
+          style={styles.profileButton}
+          onPress={() => navigation.navigate('Profile')}
+        >
+          <Ionicons name="person-circle-outline" size={30} color="#4CAF50" />
+        </TouchableOpacity>
       </View>
 
+      {/* Search Bar */}
       <View style={styles.searchContainer}>
         <TextInput
           style={styles.searchInput}
@@ -40,6 +50,7 @@ const Home = () => {
         />
       </View>
 
+      {/* Categories Section */}
       <Text style={styles.sectionTitle}>Categories</Text>
       <FlatList
         data={filteredCategories}
@@ -47,17 +58,17 @@ const Home = () => {
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <TouchableOpacity
-          style={styles.categoryCard}
-          onPress={() => navigation.navigate(item.screen, { category: item.category })}
-        >
-          <Image source={item.image} style={styles.categoryImage} />
-          <Text style={styles.categoryText}>{item.name}</Text>
-        </TouchableOpacity>
-        
+            style={styles.categoryCard}
+            onPress={() => navigation.navigate(item.screen, { category: item.category })}
+          >
+            <Image source={item.image} style={styles.categoryImage} />
+            <Text style={styles.categoryText}>{item.name}</Text>
+          </TouchableOpacity>
         )}
         contentContainerStyle={styles.categoriesContainer}
       />
 
+      {/* CTA Section */}
       <View style={styles.ctaContainer}>
         <Text style={styles.ctaText}>Are you a farmer? Start listing your produce today!</Text>
         <TouchableOpacity style={styles.ctaButton} onPress={() => navigation.navigate('Admin')}>
@@ -76,8 +87,13 @@ const styles = StyleSheet.create({
     paddingTop: 50,
   },
   header: {
-    marginBottom: 20,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
+    marginBottom: 20,
+  },
+  headerLeft: {
+    flex: 1,
   },
   title: {
     fontSize: 28,
@@ -88,6 +104,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#aaa', // Light gray for subtitle
     marginTop: 5,
+  },
+  profileButton: {
+    marginLeft: 10,
   },
   searchContainer: {
     marginBottom: 20,
