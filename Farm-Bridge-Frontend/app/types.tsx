@@ -7,4 +7,7 @@ export type RootStackParamList = {
   ExploreProducts: undefined;
   ProductDetails: { productId: string }; // Product details screen, requires 'productId' parameter
   Cart: undefined;
+  Profile: undefined;  // Profile screen, no parameters expected
+  OrderHistory: undefined;
+  OrderDetails: { orderId: string };
 };
