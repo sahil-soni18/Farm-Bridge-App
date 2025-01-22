@@ -4,6 +4,7 @@ import authRoutes from './routes/authRoutes.js';
 import userRouter from './routes/userRoutes.js';
 
 import productRoutes from './routes/productRoutes.js';
+import orderRoutes from './routes/orderRoutes.js';
 
 const app = express();
 const PORT = 3000;
@@ -26,6 +27,7 @@ app.get('/api/test-db', async (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/user', userRouter)
 app.use('/produce', productRoutes);
+app.use('/orders', orderRoutes);
 
 
 app.listen(PORT, () => {
