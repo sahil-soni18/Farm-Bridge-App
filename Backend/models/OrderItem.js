@@ -1,7 +1,7 @@
 import sequelize from "../db/db.js";
 import { DataTypes } from "sequelize";
 import Product from "./Product.js";
-import Order from "./Order.js";
+import Order from "./Orders.js";
 
 const OrderItem = sequelize.define(
   "OrderItem",
