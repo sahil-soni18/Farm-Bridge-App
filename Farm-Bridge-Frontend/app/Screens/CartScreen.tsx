@@ -114,7 +114,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#fff',
+    color: '#4CAF50',
     marginBottom: 16,
   },
   cartItem: {

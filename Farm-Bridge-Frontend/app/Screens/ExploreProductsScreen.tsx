@@ -406,7 +406,7 @@ const ExploreProductsScreen: React.FC = () => {
 
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 16, backgroundColor: '#121212' },
-  title: { fontSize: 24, fontWeight: 'bold', marginBottom: 16, color: '#fff' },
+  title: { fontSize: 24, fontWeight: 'bold', marginBottom: 16, color: '#4CAF50' },
   searchInput: {
     backgroundColor: '#1E1E1E',
     padding: 10,
@@ -436,7 +436,7 @@ const styles = StyleSheet.create({
     marginRight: 8,
     color: '#fff',
   },
-  activeFilterButton: { backgroundColor: 'gold' },
+  activeFilterButton: { backgroundColor: '#4CAF50' },
   filterButtonText: { fontSize: 14, color: '#ccc' },
   activeFilterButtonText: { color: '#fff' },
   productItem: {
