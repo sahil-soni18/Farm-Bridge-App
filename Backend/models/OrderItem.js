@@ -29,6 +29,11 @@ const OrderItem = sequelize.define(
       },
       onDelete: "CASCADE",
     },
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      defaultValue: "Crop",
+    },
     quantity: {
       type: DataTypes.INTEGER,
       allowNull: false,
@@ -45,7 +50,7 @@ const OrderItem = sequelize.define(
   }
 );
 
-Order.hasMany(OrderItem, { foreignKey: "order_id" });
+Order.hasMany(OrderItem, { foreignKey: "order_id", as: "items" });
 OrderItem.belongsTo(Order, { foreignKey: "order_id" });
 Product.hasMany(OrderItem, { foreignKey: "product_id" });
 OrderItem.belongsTo(Product, { foreignKey: "product_id" });
