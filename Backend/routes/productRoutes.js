@@ -11,4 +11,5 @@ router.get('/get-all', getAllProducts);
 router.get('/get-product/category/:category', getProductByCategory);
 router.delete('/delete-product/id/:productId', authenticateToken, deleteProduct)
 
+
 export default router
