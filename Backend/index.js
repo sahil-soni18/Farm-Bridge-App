@@ -5,6 +5,7 @@ import userRouter from './routes/userRoutes.js';
 
 import productRoutes from './routes/productRoutes.js';
 import orderRoutes from './routes/orderRoutes.js';
+import cartRoutes from './routes/cartRoutes.js';
 
 const app = express();
 const PORT = 3000;
@@ -28,6 +29,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/user', userRouter)
 app.use('/produce', productRoutes);
 app.use('/orders', orderRoutes);
+app.use('/cart', cartRoutes)
 
 
 app.listen(PORT, () => {
