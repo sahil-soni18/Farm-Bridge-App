@@ -20,6 +20,7 @@ const Cart = sequelize.define(
       },
       onDelete: "CASCADE",
     },
+  
     product_id: {
       type: DataTypes.UUID,
       allowNull: false,
@@ -28,6 +29,11 @@ const Cart = sequelize.define(
         key: "_id",
       },
       onDelete: "CASCADE",
+    },
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      defaultValue: "Crop",
     },
     quantity: {
       type: DataTypes.INTEGER,
