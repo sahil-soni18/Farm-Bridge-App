@@ -17,20 +17,41 @@ const SignUpScreen = ({ navigation }: any) => {
   const [farmLocation, setFarmLocation] = useState("");
   const [productsGrown, setProductsGrown] = useState("");
 
-  const handleSignUp = () => {
+  const handleSignUp = async () => {
     const userData = {
       name,
       email,
       password,
       isFarmer,
-      ...(isFarmer && { farmLocation, productsGrown }),
+      ...(isFarmer && { farm_location: farmLocation, products_grown: productsGrown }),
     };
-
-    console.log("User Signed Up:", userData);
-    alert("SignUp Successful!");
-    navigation.navigate('Home'); 
+  
+    try {
+      const response = await fetch("http://localhost:3000/api/auth/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(userData),
+      });
+  
+      const result = await response.json();
+  
+      if (!response.ok) {
+        // Handle error response
+        alert(result.error || "Signup failed! Please try again.");
+        return;
+      }
+  
+      // Handle successful signup
+      alert(result.message || "Signup successful!");
+      navigation.navigate("Home"); // Navigate to Home screen after successful signup
+    } catch (error) {
+      console.error("Signup error:", error);
+      alert("An error occurred. Please try again later.");
+    }
   };
-
+  
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Create Account</Text>
