@@ -56,7 +56,7 @@ export const getCartItems = async (req, res) => {
             },
         });
 
-        res.json(cartItems);
+        res.status(200).json(cartItems);
     } catch (error) {
         console.error(error); // Log error for debugging
         res.status(500).json({ message: "Something went wrong..." });
@@ -82,7 +82,7 @@ export const updateCart = async ( req, res ) => {
             return res.status(403).json({ message: 'Only the cart owner can update the cart.' });
         }
         await cartItem.update({ quantity });
-        res.status(200).json({ message: 'Cart updated successfully.' });
+        res.status(200).json({ message: 'Cart updated successfully.', cartItem });
 
     } catch (error) {
         res.status(500).json({ message: 'Something went wrong'});
@@ -107,7 +107,14 @@ export const deleteCart = async (req, res) => {
             return res.status(403).json({ message: 'Only the cart owner can delete the cart.' });
         }
         await cartItem.destroy();
-        res.status(200).json({ message: 'Cart item deleted successfully.' });
+        const updatedCart = await Cart.findAll({
+            where: { userId },
+            include: {
+                model: Product,
+                attributes: ['_id', 'name', 'price'],
+            },
+        });
+        res.status(200).json({ message: 'Cart item deleted successfully.', cartItem: updatedCart });
 
     } catch (error) {
         res.status(500).json({ message: 'Something went wrong.' });

@@ -12,14 +12,34 @@ const LoginScreen = ({ navigation }: any) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     if (!email || !password) {
       Alert.alert('Error', 'Please fill in all fields.');
       return;
     }
 
-    Alert.alert('Success', 'Login successful');
-    navigation.navigate('Home'); 
+    try {
+      const response = await fetch('http://localhost:3000/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const result = await response.json();
+
+      if (!result.ok) {
+        Alert.alert('Error', 'Invalid email or password');
+        return;
+      }
+
+      Alert.alert('Success', 'Login successful');
+      navigation.navigate('Home'); 
+    } catch (error) {
+      Alert.alert('Error', 'An error occurred while logging in');
+      console.error(error);
+    }
   };
 
   return (

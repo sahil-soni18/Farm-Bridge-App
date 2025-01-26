@@ -1,60 +1,115 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, Image, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import axios from 'axios';
 
 type CartItem = {
   id: string;
   name: string;
   price: number;
   quantity: number;
-  image: any; // For local images, use `require`. For remote, use `{ uri: 'url' }`
+  image: { uri: string } | number; // Supports both remote and local images
 };
 
-const initialCart: CartItem[] = [
-  {
-    id: '1',
-    name: 'Apple',
-    price: 3,
-    quantity: 2,
-    image: require('../../assets/images/apple.jpg'),
-  },
-  {
-    id: '2',
-    name: 'Banana',
-    price: 1,
-    quantity: 5,
-    image: require('../../assets/images/banana.jpg'),
-  },
-];
-
 const CartScreen: React.FC = () => {
-  const [cart, setCart] = useState<CartItem[]>(initialCart);
+  const [cart, setCart] = useState<CartItem[]>([]);
 
-  const updateQuantity = (id: string, increment: boolean) => {
-    setCart((prevCart) =>
-      prevCart.map((item) =>
-        item.id === id
-          ? { ...item, quantity: item.quantity + (increment ? 1 : -1) }
-          : item
-      ).filter((item) => item.quantity > 0) // Remove items with zero quantity
-    );
-  };
+  // Fetch Cart Items
+const fetchCart = async () => {
+  try {
+    const response = await axios.get("http://localhost:3000/cart/get-cart", {
+      withCredentials: true, // Sends cookies with the request
+    });
 
-  const removeItem = (id: string) => {
-    setCart((prevCart) => prevCart.filter((item) => item.id !== id));
-  };
+    // Update the cart state with the fetched items
+    setCart(response.data); // Backend sends `cartItems` directly
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.error("Error fetching cart:", error.response?.data || error.message);
+    } else {
+      console.error("Error fetching cart:", error);
+    }
+    Alert.alert("Error", "Could not load cart items. Please try again.");
+  }
+};
 
+
+// Update Quantity
+const updateQuantity = async (cartId: string, quantity: number) => {
+  try {
+      const response = await axios.put(
+          `http://localhost:3000/cart/update-cart/${cartId}`,
+          { quantity },
+          { withCredentials: true }
+      );
+
+      if (response.status !== 200) {
+        Alert.alert('Error', 'Failed to update quantity. Please try again.');
+        return;
+      }
+
+      // Assuming the backend returns all cart items
+      setCart((prevCart) =>
+          prevCart.map((item) =>
+              item.id === cartId ? { ...item, quantity } : item
+          )
+      );
+
+      Alert.alert('Success', 'Item quantity updated.');
+  } catch (error) {
+      console.error('Error updating quantity:', error);
+      Alert.alert('Error', 'Failed to update item quantity.');
+  }
+};
+
+const handleUpdateQuantity = async (cartId: string, increment: boolean) => {
+  const newQuantity = (cart.find((item) => item.id === cartId)?.quantity ?? 0) + (increment ? 1 : -1);
+  if (newQuantity < 1) {
+      Alert.alert('Error', 'Quantity cannot be less than 1.');
+      return;
+  }
+  await updateQuantity(cartId, newQuantity);
+};
+
+
+
+  // Remove Item
+  const removeItem = async (cartId: string) => {
+    try {
+        const response = await axios.delete(
+            `http://localhost:3000/cart/delete-cart/${cartId}`,
+            { withCredentials: true }
+        );
+
+        // Update cart state with updated items from the backend
+        setCart(response.data.cartItems);
+
+        Alert.alert('Success', 'Item removed from cart.');
+    } catch (error) {
+        console.error('Error removing item:', error);
+
+        const errorMessage = axios.isAxiosError(error) ? error.response?.data?.message || 'Failed to remove item.' : 'Failed to remove item.';
+        Alert.alert('Error', errorMessage);
+    }
+};
+
+
+  // Handle Checkout
   const handleCheckout = () => {
     Alert.alert('Checkout', 'Proceeding to checkout!');
   };
 
+  // Calculate Total
   const calculateTotal = (): number => {
     return cart.reduce((total, item) => total + item.price * item.quantity, 0);
   };
 
+  useEffect(() => {
+    fetchCart();
+  }, []);
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Cart</Text>
-
       <FlatList
         data={cart}
         keyExtractor={(item) => item.id}
@@ -63,21 +118,22 @@ const CartScreen: React.FC = () => {
             <Image source={item.image} style={styles.productImage} />
             <View style={styles.detailsContainer}>
               <Text style={styles.productName}>{item.name}</Text>
-              <Text style={styles.productPrice}>${item.price}</Text>
+              <Text style={styles.productPrice}>${item.price.toFixed(2)}</Text>
               <View style={styles.quantityControls}>
-                <TouchableOpacity
-                  onPress={() => updateQuantity(item.id, false)}
-                  style={styles.quantityButton}
-                >
-                  <Text style={styles.quantityButtonText}>-</Text>
-                </TouchableOpacity>
-                <Text style={styles.quantityText}>{item.quantity}</Text>
-                <TouchableOpacity
-                  onPress={() => updateQuantity(item.id, true)}
-                  style={styles.quantityButton}
-                >
-                  <Text style={styles.quantityButtonText}>+</Text>
-                </TouchableOpacity>
+              <TouchableOpacity
+    onPress={() => handleUpdateQuantity(item.id, false)}
+    style={styles.quantityButton}
+>
+    <Text style={styles.quantityButtonText}>-</Text>
+</TouchableOpacity>
+<Text style={styles.quantityText}>{item.quantity}</Text>
+<TouchableOpacity
+    onPress={() => handleUpdateQuantity(item.id, true)}
+    style={styles.quantityButton}
+>
+    <Text style={styles.quantityButtonText}>+</Text>
+</TouchableOpacity>
+
               </View>
               <TouchableOpacity
                 onPress={() => removeItem(item.id)}
@@ -88,14 +144,11 @@ const CartScreen: React.FC = () => {
             </View>
           </View>
         )}
-        ListEmptyComponent={
-          <Text style={styles.emptyText}>Your cart is empty.</Text>
-        }
+        ListEmptyComponent={<Text style={styles.emptyText}>Your cart is empty.</Text>}
       />
-
       {cart.length > 0 && (
         <View style={styles.footer}>
-          <Text style={styles.totalText}>Total: ${calculateTotal()}</Text>
+          <Text style={styles.totalText}>Total: ${calculateTotal().toFixed(2)}</Text>
           <TouchableOpacity style={styles.checkoutButton} onPress={handleCheckout}>
             <Text style={styles.checkoutButtonText}>Checkout</Text>
           </TouchableOpacity>
