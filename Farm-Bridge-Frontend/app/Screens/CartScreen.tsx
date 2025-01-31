@@ -1,106 +1,87 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, Image, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { View, Text, FlatList, Image, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } from 'react-native';
 import axios from 'axios';
 
-type CartItem = {
+const API_BASE_URL = "http://localhost:3000/cart";
+
+interface CartItem {
   id: string;
   name: string;
   price: number;
   quantity: number;
-  image: { uri: string } | number; // Supports both remote and local images
-};
+  image: any; // Adjust the type according to your image source
+}
 
 const CartScreen: React.FC = () => {
   const [cart, setCart] = useState<CartItem[]>([]);
+  const [loading, setLoading] = useState(false);
 
   // Fetch Cart Items
-const fetchCart = async () => {
-  try {
-    const response = await axios.get("http://localhost:3000/cart/get-cart", {
-      withCredentials: true, // Sends cookies with the request
-    });
-
-    // Update the cart state with the fetched items
-    setCart(response.data); // Backend sends `cartItems` directly
-  } catch (error) {
-    if (axios.isAxiosError(error)) {
-      console.error("Error fetching cart:", error.response?.data || error.message);
-    } else {
-      console.error("Error fetching cart:", error);
-    }
-    Alert.alert("Error", "Could not load cart items. Please try again.");
-  }
-};
-
-
-// Update Quantity
-const updateQuantity = async (cartId: string, quantity: number) => {
-  try {
-      const response = await axios.put(
-          `http://localhost:3000/cart/update-cart/${cartId}`,
-          { quantity },
-          { withCredentials: true }
-      );
-
-      if (response.status !== 200) {
-        Alert.alert('Error', 'Failed to update quantity. Please try again.');
-        return;
-      }
-
-      // Assuming the backend returns all cart items
-      setCart((prevCart) =>
-          prevCart.map((item) =>
-              item.id === cartId ? { ...item, quantity } : item
-          )
-      );
-
-      Alert.alert('Success', 'Item quantity updated.');
-  } catch (error) {
-      console.error('Error updating quantity:', error);
-      Alert.alert('Error', 'Failed to update item quantity.');
-  }
-};
-
-const handleUpdateQuantity = async (cartId: string, increment: boolean) => {
-  const newQuantity = (cart.find((item) => item.id === cartId)?.quantity ?? 0) + (increment ? 1 : -1);
-  if (newQuantity < 1) {
-      Alert.alert('Error', 'Quantity cannot be less than 1.');
-      return;
-  }
-  await updateQuantity(cartId, newQuantity);
-};
-
-
-
-  // Remove Item
-  const removeItem = async (cartId: string) => {
+  const fetchCart = async () => {
+    setLoading(true);
     try {
-        const response = await axios.delete(
-            `http://localhost:3000/cart/delete-cart/${cartId}`,
-            { withCredentials: true }
-        );
-
-        // Update cart state with updated items from the backend
-        setCart(response.data.cartItems);
-
-        Alert.alert('Success', 'Item removed from cart.');
+      const response = await axios.get(`http://localhost:3000/cart/get-cart`, { withCredentials: true });
+      setCart(response.data.data);
     } catch (error) {
-        console.error('Error removing item:', error);
-
-        const errorMessage = axios.isAxiosError(error) ? error.response?.data?.message || 'Failed to remove item.' : 'Failed to remove item.';
-        Alert.alert('Error', errorMessage);
+      console.error("Error fetching cart:", error);
+      Alert.alert("Error", "Could not load cart items.");
     }
-};
-
-
-  // Handle Checkout
-  const handleCheckout = () => {
-    Alert.alert('Checkout', 'Proceeding to checkout!');
+    setLoading(false);
   };
 
-  // Calculate Total
-  const calculateTotal = (): number => {
-    return cart.reduce((total, item) => total + item.price * item.quantity, 0);
+  // Add to Cart
+  interface AddToCartResponse {
+    data: CartItem[];
+  }
+
+  const addToCart = async (productId: string): Promise<void> => {
+    try {
+      const response = await axios.post<AddToCartResponse>(`http://localhost:3000/cart//add-to-cart`, { productId, quantity: 1 }, { withCredentials: true });
+      setCart(response.data.data);
+      Alert.alert("Success", "Item added to cart!");
+    } catch (error) {
+      console.error("Error adding to cart:", error);
+      Alert.alert("Error", "Failed to add item.");
+    }
+  };
+
+  // Update Quantity
+  interface UpdateQuantityResponse {
+    data: CartItem[];
+  }
+
+  const updateQuantity = async (cartId: string, quantity: number): Promise<void> => {
+    if (quantity < 1) return;
+    try {
+      const response = await axios.put<UpdateQuantityResponse>(`http://localhost:3000/cart/update-cart/${cartId}`, { quantity }, { withCredentials: true });
+      setCart(response.data.data);
+    } catch (error) {
+      console.error("Error updating quantity:", error);
+      Alert.alert("Error", "Failed to update quantity.");
+    }
+  };
+
+  // Remove Item
+  const removeItem = async (cartId: string): Promise<void> => {
+    try {
+      const response = await axios.delete<{ data: CartItem[] }>(`http://localhost:3000/cart/delete-cart/${cartId}`, { withCredentials: true });
+      setCart(response.data.data);
+    } catch (error) {
+      console.error("Error removing item:", error);
+      Alert.alert("Error", "Failed to remove item.");
+    }
+  };
+
+  // Checkout
+  const handleCheckout = async () => {
+    try {
+      const response = await axios.post(`http://localhost:3000/cart/checkout`, {}, { withCredentials: true });
+      Alert.alert("Success", "Checkout completed!");
+      setCart([]);
+    } catch (error) {
+      console.error("Error during checkout:", error);
+      Alert.alert("Error", "Checkout failed.");
+    }
   };
 
   useEffect(() => {
@@ -110,45 +91,39 @@ const handleUpdateQuantity = async (cartId: string, increment: boolean) => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Cart</Text>
-      <FlatList
-        data={cart}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <View style={styles.cartItem}>
-            <Image source={item.image} style={styles.productImage} />
-            <View style={styles.detailsContainer}>
-              <Text style={styles.productName}>{item.name}</Text>
-              <Text style={styles.productPrice}>${item.price.toFixed(2)}</Text>
-              <View style={styles.quantityControls}>
-              <TouchableOpacity
-    onPress={() => handleUpdateQuantity(item.id, false)}
-    style={styles.quantityButton}
->
-    <Text style={styles.quantityButtonText}>-</Text>
-</TouchableOpacity>
-<Text style={styles.quantityText}>{item.quantity}</Text>
-<TouchableOpacity
-    onPress={() => handleUpdateQuantity(item.id, true)}
-    style={styles.quantityButton}
->
-    <Text style={styles.quantityButtonText}>+</Text>
-</TouchableOpacity>
-
+      {loading ? (
+        <ActivityIndicator size="large" color="#4CAF50" />
+      ) : (
+        <FlatList
+          data={cart}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => (
+            <View style={styles.cartItem}>
+              <Image source={item.image} style={styles.productImage} />
+              <View style={styles.detailsContainer}>
+                <Text style={styles.productName}>{item.name}</Text>
+                <Text style={styles.productPrice}>${item.price.toFixed(2)}</Text>
+                <View style={styles.quantityControls}>
+                  <TouchableOpacity onPress={() => updateQuantity(item.id, item.quantity - 1)} style={styles.quantityButton}>
+                    <Text style={styles.quantityButtonText}>-</Text>
+                  </TouchableOpacity>
+                  <Text style={styles.quantityText}>{item.quantity}</Text>
+                  <TouchableOpacity onPress={() => updateQuantity(item.id, item.quantity + 1)} style={styles.quantityButton}>
+                    <Text style={styles.quantityButtonText}>+</Text>
+                  </TouchableOpacity>
+                </View>
+                <TouchableOpacity onPress={() => removeItem(item.id)} style={styles.removeButton}>
+                  <Text style={styles.removeButtonText}>Remove</Text>
+                </TouchableOpacity>
               </View>
-              <TouchableOpacity
-                onPress={() => removeItem(item.id)}
-                style={styles.removeButton}
-              >
-                <Text style={styles.removeButtonText}>Remove</Text>
-              </TouchableOpacity>
             </View>
-          </View>
-        )}
-        ListEmptyComponent={<Text style={styles.emptyText}>Your cart is empty.</Text>}
-      />
+          )}
+          ListEmptyComponent={<Text style={styles.emptyText}>Your cart is empty.</Text>}
+        />
+      )}
       {cart.length > 0 && (
         <View style={styles.footer}>
-          <Text style={styles.totalText}>Total: ${calculateTotal().toFixed(2)}</Text>
+          <Text style={styles.totalText}>Total: ${cart.reduce((total, item) => total + item.price * item.quantity, 0).toFixed(2)}</Text>
           <TouchableOpacity style={styles.checkoutButton} onPress={handleCheckout}>
             <Text style={styles.checkoutButtonText}>Checkout</Text>
           </TouchableOpacity>
@@ -157,7 +132,6 @@ const handleUpdateQuantity = async (cartId: string, increment: boolean) => {
     </View>
   );
 };
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,

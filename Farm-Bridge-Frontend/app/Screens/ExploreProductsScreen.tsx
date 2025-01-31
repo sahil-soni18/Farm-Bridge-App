@@ -227,7 +227,7 @@
 // export default ExploreProductsScreen;
 
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -236,48 +236,58 @@ import {
   StyleSheet,
   TextInput,
   Image,
+  ActivityIndicator,
+  Alert,
 } from 'react-native';
+import axios from 'axios';
 
 type Product = {
   id: string;
   name: string;
   price: number;
+  image: string;
   category: string;
-  image: string | any; // Adjusted type to allow both string (URL) and require() (local images)
 };
 
-const PRODUCTS: Product[] = [
-  { id: '1', name: 'Apple', price: 3, category: 'Fruits', image: require('../../assets/images/Fruits.jpeg') },
-  { id: '2', name: 'Banana', price: 1, category: 'Fruits', image: require('../../assets/images/banana.jpg')},
-  { id: '3', name: 'Rice', price: 10, category: 'Grains', image: require('../../assets/images/rice.webp') },
-  { id: '4', name: 'Wheat', price: 12, category: 'Grains', image: require('../../assets/images/wheat.jpg') },
-  { id: '5', name: 'Carrot', price: 2, category: 'Vegetables', image: require('../../assets/images/carrot.jpg') },
-  { id: '6', name: 'Broccoli', price: 4, category: 'Vegetables', image: require('../../assets/images/Vegies.jpeg') },
-  { id: '7', name: 'Milk', price: 5, category: 'Dairy', image: require('../../assets/images/milk.webp') },
-  { id: '8', name: 'Cheese', price: 8, category: 'Dairy', image: require('../../assets/images/paneer.jpeg') },
-];
+const [products, setProducts] = useState<Product[]>([]);
 
 const ExploreProductsScreen: React.FC = () => {
-  const [search, setSearch] = useState<string>('');
+  const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [sortOption, setSortOption] = useState<'priceAsc' | 'priceDesc' | null>(null);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const categories = Array.from(
-    new Set(PRODUCTS.map((product) => product.category))
-  );
+  useEffect(() => {
+    fetchProducts();
+  }, []);
 
-  const filterAndSortProducts = (): Product[] => {
-    let filteredProducts = PRODUCTS;
+  const fetchProducts = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get('http://localhost:3000/product/id/update/:productId/myProducts/get-all/get-product/category/:category');
+      setProducts(response.data.products);
+    } catch (error) {
+      Alert.alert('Error', 'Failed to load products');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const categories = Array.from(new Set(products.map((product: any) => product.category)));
+
+  const filterAndSortProducts = () => {
+    let filteredProducts = [...products];
 
     if (search) {
-      filteredProducts = filteredProducts.filter((product) =>
+      filteredProducts = filteredProducts.filter((product: Product) =>
         product.name.toLowerCase().includes(search.toLowerCase())
       );
     }
 
     if (selectedCategory) {
       filteredProducts = filteredProducts.filter(
-        (product) => product.category === selectedCategory
+        (product: Product) => product.category === selectedCategory
       );
     }
 
@@ -290,19 +300,14 @@ const ExploreProductsScreen: React.FC = () => {
     return filteredProducts;
   };
 
-  const handleCategorySelect = (category: string | null) => {
-    setSelectedCategory(category);
-  };
-
-  const handleSort = (option: 'priceAsc' | 'priceDesc') => {
-    setSortOption(option);
-  };
+  if (loading) {
+    return <ActivityIndicator size="large" color="#4CAF50" style={{ marginTop: 50 }} />;
+  }
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Explore Farm Products</Text>
 
-      {/* Search Bar */}
       <TextInput
         style={styles.searchInput}
         placeholder="Search products..."
@@ -311,94 +316,18 @@ const ExploreProductsScreen: React.FC = () => {
         onChangeText={setSearch}
       />
 
-      {/* Filters */}
-      <View style={styles.filters}>
-        <View style={styles.categoryFilter}>
-          <Text style={styles.filterTitle}>Categories:</Text>
-          <FlatList
-            horizontal
-            data={categories}
-            keyExtractor={(item) => item}
-            renderItem={({ item }) => (
-              <TouchableOpacity
-                style={[
-                  styles.filterButton,
-                  selectedCategory === item && styles.activeFilterButton,
-                ]}
-                onPress={() =>
-                  handleCategorySelect(selectedCategory === item ? null : item)
-                }
-              >
-                <Text
-                  style={[
-                    styles.filterButtonText,
-                    selectedCategory === item && styles.activeFilterButtonText,
-                  ]}
-                >
-                  {item}
-                </Text>
-              </TouchableOpacity>
-            )}
-          />
-        </View>
-
-        <View style={styles.sortFilter}>
-          <Text style={styles.filterTitle}>Sort by:</Text>
-          <TouchableOpacity
-            style={[
-              styles.filterButton,
-              sortOption === 'priceAsc' && styles.activeFilterButton,
-            ]}
-            onPress={() => handleSort('priceAsc')}
-          >
-            <Text
-              style={[
-                styles.filterButtonText,
-                sortOption === 'priceAsc' && styles.activeFilterButtonText,
-              ]}
-            >
-              Price ↑
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[
-              styles.filterButton,
-              sortOption === 'priceDesc' && styles.activeFilterButton,
-            ]}
-            onPress={() => handleSort('priceDesc')}
-          >
-            <Text
-              style={[
-                styles.filterButtonText,
-                sortOption === 'priceDesc' && styles.activeFilterButtonText,
-              ]}
-            >
-              Price ↓
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-
-      {/* Product List */}
       <FlatList
         data={filterAndSortProducts()}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <View style={styles.productItem}>
-            <Image 
-              source={typeof item.image === 'string' ? { uri: item.image } : item.image}
-              style={styles.productImage} 
-            />
-            <View>
-              <Text style={styles.productName}>{item.name}</Text>
-              <Text style={styles.productPrice}>${item.price}</Text>
-              <Text style={styles.productCategory}>{item.category}</Text>
-            </View>
+            <Image source={{ uri: item.image }} style={styles.productImage} />
+            <Text style={styles.productName}>{item.name}</Text>
+            <Text style={styles.productPrice}>${item.price}</Text>
+            <Text style={styles.productCategory}>{item.category}</Text>
           </View>
         )}
-        ListEmptyComponent={
-          <Text style={styles.emptyText}>No products found.</Text>
-        }
+        ListEmptyComponent={<Text style={styles.emptyText}>No products found.</Text>}
       />
     </View>
   );
@@ -417,28 +346,6 @@ const styles = StyleSheet.create({
     borderColor: '#333',
     color: '#fff',
   },
-  filters: { marginBottom: 16 },
-  filterTitle: { fontSize: 16, fontWeight: 'bold', marginBottom: 8, color: '#fff' },
-  categoryFilter: {
-    flexDirection: 'row',
-    marginBottom: 16,
-  },
-  sortFilter: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  filterButton: {
-    padding: 8,
-    backgroundColor: '#333',
-    borderRadius: 8,
-    marginRight: 8,
-    color: '#fff',
-  },
-  activeFilterButton: { backgroundColor: '#4CAF50' },
-  filterButtonText: { fontSize: 14, color: '#ccc' },
-  activeFilterButtonText: { color: '#fff' },
   productItem: {
     padding: 16,
     backgroundColor: '#1E1E1E',

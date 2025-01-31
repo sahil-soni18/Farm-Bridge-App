@@ -10,162 +10,85 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import axios from 'axios';
 import { RootStackParamList } from '../types';
-import { ProductContext } from '../(tabs)/context/ProductContext';
-
-
-type Category = 'Fruits' | 'Vegetables' | 'Grains' | 'Dairy';
-
-const categoryImageMapping: Record<Category, Record<string, string>> = {
-  Fruits: {
-    Apple: 'apple.jpg',
-    Banana: 'banana.jpg',
-    default: 'Placeholder.jpg',
-  },
-  Vegetables: {
-    Carrot: 'carrot.jpg',
-    Potato: 'potato.jpeg',
-    default: 'Placeholder.jpg',
-  },
-  Grains: {
-    Rice: 'rice.jpeg',
-    Wheat: 'wheat.jpg',
-    default: 'Placeholder.jpg',
-  },
-  Dairy: {
-    Milk: 'milk.jpg',
-    Cheese: 'Dairy.jpeg',
-    default: 'Placeholder.jpg',
-  },
-};
-
-export const imageMapping: Record<string, any> = {
-  'apple.jpg': require('../../assets/images/apple.jpg'),
-  'banana.jpg': require('../../assets/images/banana.jpg'),
-  'carrot.jpg': require('../../assets/images/carrot.jpg'),
-  'potato.jpeg': require('../../assets/images/potato.jpeg'),
-  'rice.jpeg': require('../../assets/images/rice.jpeg'),
-  'wheat.jpg': require('../../assets/images/wheat.jpg'),
-  'milk.jpg': require('../../assets/images/milk.jpg'),
-  'Dairy.jpeg': require('../../assets/images/Dairy.jpeg'),
-  'Placeholder.jpg': require('../../assets/images/Placeholder.jpg'),
-};
 
 const AdminScreen = () => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const { addProduct } = useContext(ProductContext);
-
+  
   const [productName, setProductName] = useState('');
   const [productDescription, setProductDescription] = useState('');
   const [productPrice, setProductPrice] = useState('');
   const [productQuantity, setProductQuantity] = useState('');
-  const [productCategory, setProductCategory] = useState<Category>('Fruits');
+  const [productCategory, setProductCategory] = useState('Fruits');
 
-  const categories: Category[] = ['Fruits', 'Vegetables', 'Grains', 'Dairy'];
+  const categories = ['Fruits', 'Vegetables', 'Grains', 'Dairy'];
 
-  const handleAddProduct = () => {
+  const handleAddProduct = async () => {
     if (!productName || !productDescription || !productPrice || !productQuantity || !productCategory) {
       Alert.alert('Error', 'Please fill all fields');
       return;
     }
 
-    const categoryImages = categoryImageMapping[productCategory];
-    const image = categoryImages[productName] || categoryImages.default;
-
     const newProduct = {
-      id: Math.random().toString(),
       name: productName,
       description: productDescription,
-      price: productPrice,
-      quantity: productQuantity,
-      image: image,
+      price: parseFloat(productPrice),
+      quantity: parseInt(productQuantity),
+      category: productCategory,
     };
 
-    console.log("New Product: " + JSON.stringify(newProduct));
-    addProduct(productCategory, newProduct);
+    try {
+      const response = await axios.post('http://localhost:3000/products/create', newProduct, {
+        withCredentials: true,
+      });
 
-    setProductName('');
-    setProductDescription('');
-    setProductPrice('');
-    setProductQuantity('');
-    setProductCategory('Fruits');
-
-    Alert.alert('Success', 'Product added successfully!');
+      if (response.status === 201) {
+        Alert.alert('Success', 'Product added successfully!');
+        setProductName('');
+        setProductDescription('');
+        setProductPrice('');
+        setProductQuantity('');
+        setProductCategory('Fruits');
+      } else {
+        Alert.alert('Error', 'Failed to add product');
+      }
+    } catch (error) {
+      console.error('Error adding product:', error);
+      Alert.alert('Error', 'Failed to add product. Please try again.');
+    }
   };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      {/* Back Button */}
       <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
         <Text style={styles.backButtonText}>← Back</Text>
       </TouchableOpacity>
-
       <Text style={styles.title}>Kisan Dwar</Text>
 
-      {/* Product Name Input */}
       <Text style={styles.label}>Product Name</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Enter product name"
-        value={productName}
-        onChangeText={setProductName}
-      />
+      <TextInput style={styles.input} placeholder="Enter product name" value={productName} onChangeText={setProductName} />
 
-      {/* Product Description Input */}
       <Text style={styles.label}>Product Description</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Enter product description"
-        value={productDescription}
-        onChangeText={setProductDescription}
-        multiline
-      />
+      <TextInput style={styles.input} placeholder="Enter product description" value={productDescription} onChangeText={setProductDescription} multiline />
 
-      {/* Product Price Input */}
       <Text style={styles.label}>Product Price</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Enter product price"
-        value={productPrice}
-        onChangeText={setProductPrice}
-        keyboardType="numeric"
-      />
+      <TextInput style={styles.input} placeholder="Enter product price" value={productPrice} onChangeText={setProductPrice} keyboardType="numeric" />
 
-      {/* Product Quantity Input */}
       <Text style={styles.label}>Product Quantity</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Enter product quantity"
-        value={productQuantity}
-        onChangeText={setProductQuantity}
-        keyboardType="numeric"
-      />
+      <TextInput style={styles.input} placeholder="Enter product quantity" value={productQuantity} onChangeText={setProductQuantity} keyboardType="numeric" />
 
-      {/* Product Category Section */}
       <Text style={styles.label}>Product Category</Text>
       <View style={styles.categoryContainer}>
         {categories.map((category) => (
-          <TouchableOpacity
-            key={category}
-            style={[
-              styles.categoryButton,
-              productCategory === category && styles.selectedCategoryButton,
-            ]}
-            onPress={() => setProductCategory(category)}
-          >
-            <Text
-              style={[
-                styles.categoryButtonText,
-                productCategory === category && styles.selectedCategoryButtonText,
-              ]}
-            >
+          <TouchableOpacity key={category} style={[styles.categoryButton, productCategory === category && styles.selectedCategoryButton]} onPress={() => setProductCategory(category)}>
+            <Text style={[styles.categoryButtonText, productCategory === category && styles.selectedCategoryButtonText]}>
               {category}
             </Text>
           </TouchableOpacity>
         ))}
       </View>
 
-      {/* Add Product Button */}
       <TouchableOpacity style={styles.addButton} onPress={handleAddProduct}>
         <Text style={styles.buttonText}>Add Product</Text>
       </TouchableOpacity>
