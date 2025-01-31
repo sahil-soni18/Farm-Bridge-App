@@ -1,5 +1,7 @@
-import React from 'react';
-import { View, Text, Image, Button, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, Image, TouchableOpacity, StyleSheet, ScrollView, ActivityIndicator, Alert } from 'react-native';
+import { RouteProp, useRoute } from '@react-navigation/native';
+import axios from 'axios';
 
 type Product = {
   id: string;
@@ -8,32 +10,73 @@ type Product = {
   price: number;
   quantity: number;
   seller: string;
-  image: any; // For local images, use `require`. For remote, use `{ uri: 'url' }`
-};
-
-const product: Product = {
-  id: '1',
-  name: 'Apple',
-  description: 'Fresh and organic apples directly from the farm.',
-  price: 3,
-  quantity: 50,
-  seller: 'John Doe Farms',
-  image: require('../../assets/images/Fruits.jpeg'), // Replace with your image
+  image: string;
 };
 
 const ProductDetailsScreen: React.FC = () => {
-  const handleNegotiate = () => {
-    alert('Negotiation process started!');
+  const route = useRoute<RouteProp<{ params: { productId: string } }, 'params'>>();
+  const productId = route.params.productId;
+
+  const [product, setProduct] = useState<Product | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch Product Details
+  const fetchProductDetails = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get(`http://localhost:3000/product/id/update/:productId/myProducts/get-all/get-product/category/:category`, { withCredentials: true });
+
+      if (response.status === 200) {
+        setProduct(response.data.product);
+      } else {
+        Alert.alert('Error', 'Failed to load product details.');
+      }
+    } catch (error) {
+      console.error('Error fetching product:', error);
+      Alert.alert('Error', 'Could not fetch product details.');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleOrder = () => {
-    alert('Order placed successfully!');
+  useEffect(() => {
+    fetchProductDetails();
+  }, [productId]);
+
+  const handleNegotiate = () => {
+    Alert.alert('Negotiation', 'Negotiation process started!');
   };
+
+  const handleOrder = async () => {
+    try {
+      const response = await axios.post(`http://localhost:3000/api/orders`, {
+        productId: product?.id,
+        quantity: 1, // You can allow the user to select quantity
+      });
+
+      if (response.status === 201) {
+        Alert.alert('Success', 'Order placed successfully!');
+      } else {
+        Alert.alert('Error', 'Failed to place order.');
+      }
+    } catch (error) {
+      console.error('Error placing order:', error);
+      Alert.alert('Error', 'Could not place order.');
+    }
+  };
+
+  if (loading) {
+    return <ActivityIndicator size="large" color="#4CAF50" style={styles.loader} />;
+  }
+
+  if (!product) {
+    return <Text style={styles.errorText}>Product not found.</Text>;
+  }
 
   return (
     <ScrollView style={styles.container}>
       {/* Product Image */}
-      <Image source={product.image} style={styles.productImage} />
+      <Image source={product.image ? { uri: product.image } : require('../../assets/images/Placeholder.jpg')} style={styles.productImage} />
 
       {/* Product Details */}
       <View style={styles.detailsContainer}>
@@ -41,8 +84,8 @@ const ProductDetailsScreen: React.FC = () => {
         <Text style={styles.productDescription}>{product.description}</Text>
 
         <View style={styles.priceQuantity}>
-          <Text style={styles.productPrice}>Price: ${product.price}</Text>
-          <Text style={styles.productQuantity}>Quantity: {product.quantity}</Text>
+          <Text style={styles.productPrice}>Price: ₹{product.price}</Text>
+          <Text style={styles.productQuantity}>Available: {product.quantity}</Text>
         </View>
 
         <Text style={styles.sellerDetails}>Seller: {product.seller}</Text>
@@ -64,7 +107,7 @@ const ProductDetailsScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1c1c1c', // Dark theme
+    backgroundColor: '#1c1c1c',
     padding: 16,
   },
   productImage: {
@@ -132,6 +175,15 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#fff',
     textAlign: 'center',
+  },
+  loader: {
+    marginTop: 50,
+  },
+  errorText: {
+    fontSize: 18,
+    color: 'red',
+    textAlign: 'center',
+    marginTop: 50,
   },
 });
 

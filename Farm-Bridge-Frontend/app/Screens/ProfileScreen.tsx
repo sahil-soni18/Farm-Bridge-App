@@ -1,29 +1,64 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, Text, TextInput, TouchableOpacity, Image } from 'react-native';
+import { StyleSheet, View, Text, TextInput, TouchableOpacity, Image, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+
+// Define the API base URL
+const API_BASE_URL = 'http://localhost:3000';
 import { RootStackParamList } from '../types';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 const Profile = () => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [userDetails, setUserDetails] = useState({
-    name: 'Shyam Krishna Thanvi',
-    email: 'Shyamkrishna1212@gmail.com',
-    phone: '+91 8005876900',
-    address: 'Vyas park ke samne',
+    name: 'Your name',
+    email: 'yourname123@gmail.com',
+    phone: '+91 1234567890',
+    address: '123 Street, City, Country',
   });
 
-  const handleUpdate = () => {
-    // Logic to update user details
-    console.log('User details updated:', userDetails);
+  // Fetch user profile from API
+  const fetchProfile = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(`http://localhost:3000/user/profile`);
+      const data = await response.json();
+
+      if (response.ok) {
+        setUserDetails(data);
+      } else {
+        Alert.alert('Error', data.message || 'Failed to fetch profile.');
+      }
+    } catch (error) {
+      Alert.alert('Error', 'Something went wrong while fetching profile.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleUpdate = async () => {
+    try {
+      const response = await fetch('http://localhost:3000/user/update', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(userDetails),
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        Alert.alert('Success', 'Profile updated successfully!');
+      } else {
+        Alert.alert('Error', data.message || 'Failed to update profile');
+      }
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      Alert.alert('Error', 'Something went wrong');
+    }
   };
 
   return (
     <View style={styles.container}>
-      {/* <View style={styles.header}>
-        <Text style={styles.title}></Text>
-      </View> */}
-
       <View style={styles.profileContainer}>
         <Image source={require('../../assets/images/Profile.jpeg')} style={styles.profileImage} />
         <Text style={styles.profileName}>{userDetails.name}</Text>
@@ -134,3 +169,4 @@ const styles = StyleSheet.create({
 });
 
 export default Profile;
+const [loading, setLoading] = useState(false);
