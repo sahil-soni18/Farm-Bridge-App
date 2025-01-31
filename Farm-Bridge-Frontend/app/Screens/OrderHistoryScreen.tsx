@@ -1,19 +1,47 @@
-import React from 'react';
-import { StyleSheet, View, Text, FlatList, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, View, Text, FlatList, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import axios from 'axios';
 import { RootStackParamList } from '../types';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
-const orders = [
-  { id: '1', date: '2023-10-01', items: ['Apples', 'Bananas'], total: 25.0, status: 'Delivered' },
-  { id: '2', date: '2023-09-28', items: ['Carrots', 'Potatoes'], total: 15.0, status: 'Cancelled' },
-  { id: '3', date: '2023-09-25', items: ['Milk', 'Cheese'], total: 20.0, status: 'Pending' },
-];
+type Order = {
+  id: string;
+  date: string;
+  items: string[];
+  total: number;
+  status: string;
+};
 
 const OrderHistory = () => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const renderOrderItem = ({ item }: { item: typeof orders[0] }) => (
+  // Fetch Order History from Backend
+  const fetchOrders = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get('http://localhost:3000/orders/user/orders', { withCredentials: true });
+
+      if (response.status === 200) {
+        setOrders(response.data.orders); // Assuming backend sends orders in { orders: [...] }
+      } else {
+        Alert.alert('Error', 'Failed to load orders. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error fetching orders:', error);
+      Alert.alert('Error', 'Could not fetch order history.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchOrders();
+  }, []);
+
+  const renderOrderItem = ({ item }: { item: Order }) => (
     <TouchableOpacity
       style={styles.orderCard}
       onPress={() => navigation.navigate('OrderDetails', { orderId: item.id })}
@@ -33,12 +61,18 @@ const OrderHistory = () => {
         <Text style={styles.title}>Order History</Text>
       </View>
 
-      <FlatList
-        data={orders}
-        keyExtractor={(item) => item.id}
-        renderItem={renderOrderItem}
-        contentContainerStyle={styles.orderList}
-      />
+      {loading ? (
+        <ActivityIndicator size="large" color="#4CAF50" style={styles.loader} />
+      ) : orders.length === 0 ? (
+        <Text style={styles.emptyText}>No orders found.</Text>
+      ) : (
+        <FlatList
+          data={orders}
+          keyExtractor={(item) => item.id}
+          renderItem={renderOrderItem}
+          contentContainerStyle={styles.orderList}
+        />
+      )}
     </View>
   );
 };
@@ -86,6 +120,15 @@ const styles = StyleSheet.create({
   orderStatus: {
     fontSize: 14,
     fontWeight: 'bold',
+  },
+  loader: {
+    marginTop: 50,
+  },
+  emptyText: {
+    textAlign: 'center',
+    fontSize: 16,
+    color: '#aaa',
+    marginTop: 20,
   },
 });
 

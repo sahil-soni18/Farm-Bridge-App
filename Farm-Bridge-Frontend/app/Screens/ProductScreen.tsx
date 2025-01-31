@@ -1,49 +1,71 @@
-import React, { useContext, useEffect } from 'react';
-import { StyleSheet, View, Text, FlatList, Image, Dimensions } from 'react-native';
-import { ProductContext } from '../(tabs)/context/ProductContext'; // Adjust the path as needed
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, View, Text, FlatList, Image, ActivityIndicator, Alert, Dimensions } from 'react-native';
 import { RouteProp, useRoute } from '@react-navigation/native';
-import { imageMapping } from './AdminScreen'; // Adjust the path as needed
+import axios from 'axios';
 
 const screenWidth = Dimensions.get('window').width;
 
+type Product = {
+  id: string;
+  name: string;
+  price: number;
+  image?: string;
+};
+
 const ProductScreen = () => {
-  const { products } = useContext(ProductContext);
   const route = useRoute<RouteProp<{ params: { category: string } }, 'params'>>();
   const category = route.params.category;
 
-  const categoryProducts = products[category] || []; // Safely access the products of the selected category
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch Products from Backend
+  const fetchProducts = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get(`http://localhost:3000/product/id/update/:productId/myProducts/get-all/get-product/category/:category`, { withCredentials: true });
+
+      if (response.status === 200) {
+        setProducts(response.data.products); // Assuming backend sends { products: [...] }
+      } else {
+        Alert.alert('Error', 'Failed to load products.');
+      }
+    } catch (error) {
+      console.error('Error fetching products:', error);
+      Alert.alert('Error', 'Could not fetch products.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    console.log("Category Products: " + JSON.stringify(categoryProducts));
-    console.log("Image URI: " , "../../assets/images/apple.jpg")
-  }, [products])
+    fetchProducts();
+  }, [category]);
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>{category}</Text>
-      <FlatList
-        data={categoryProducts}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <View style={styles.productCard}>
-            {item.image ? (
+
+      {loading ? (
+        <ActivityIndicator size="large" color="#4CAF50" style={styles.loader} />
+      ) : (
+        <FlatList
+          data={products}
+          keyExtractor={(item: Product) => item.id}
+          renderItem={({ item }: { item: Product }) => (
+            <View style={styles.productCard}>
               <Image
-                source={imageMapping[item.image]}
+                source={item.image ? { uri: item.image } : require('../../assets/images/Placeholder.jpg')}
                 style={styles.productImage}
               />
-            ) : (
-              <Image
-                source={require('../../assets/images/Placeholder.jpg')} // Use a placeholder image
-                style={styles.productImage}
-              />
-            )}
-            <Text style={styles.productName}>{item.name}</Text>
-            <Text style={styles.productPrice}>₹{item.price}</Text>
-            <Text style={styles.productQuantity}>{item.quantity}</Text>
-          </View>
-        )}
-        numColumns={2}
-        contentContainerStyle={styles.productList}
-      />
+              <Text style={styles.productName}>{item.name}</Text>
+              <Text style={styles.productPrice}>₹{item.price}</Text>
+            </View>
+          )}
+          numColumns={2}
+          contentContainerStyle={styles.productList}
+        />
+      )}
     </View>
   );
 };
@@ -94,6 +116,9 @@ const styles = StyleSheet.create({
   },
   productList: {
     justifyContent: 'space-between',
+  },
+  loader: {
+    marginTop: 50,
   },
 });
 
