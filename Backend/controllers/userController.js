@@ -47,6 +47,8 @@ export const updateUserDetails = async (req, res) => {
 
 // Get Profile
 export const getProfile = async (req, res) => {
+  console.log('Cookies:', req.cookies); // Debugging step
+  console.log('Token:', req.cookies.token); // Debugging step
   const { userId } = req.user;
 
   try {

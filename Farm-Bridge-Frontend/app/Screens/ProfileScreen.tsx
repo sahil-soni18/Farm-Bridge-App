@@ -1,30 +1,64 @@
-import React, { useState } from 'react';
-import { StyleSheet, View, Text, TextInput, TouchableOpacity, Image, Alert } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { 
+  StyleSheet, View, Text, TextInput, TouchableOpacity, 
+  Image, Alert, ActivityIndicator 
+} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-
-// Define the API base URL
-const API_BASE_URL = 'http://localhost:3000';
 import { RootStackParamList } from '../types';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import getToken from "../getToken.js";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+// #TODO:
+// Define the API base URL
+const baseUrl = 'http://192.168.29.189:3000';
 
 const Profile = () => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+
   const [userDetails, setUserDetails] = useState({
-    name: 'Your name',
-    email: 'yourname123@gmail.com',
-    phone: '+91 1234567890',
-    address: '123 Street, City, Country',
+    name: '',
+    email: '',
+    phone: '',
+    address: '',
   });
 
-  // Fetch user profile from API
+  const [loading, setLoading] = useState(false);
+  const [updating, setUpdating] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
+
+  // Fetch user profile from API on mount
+  useEffect(() => {
+    fetchProfile();
+  }, []);
+
   const fetchProfile = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`http://localhost:3000/user/profile`);
-      const data = await response.json();
+      const token = await getToken();
+      if (!token) {
+        Alert.alert('Error', 'No token found. Please log in again.');
+        navigation.navigate('Login');
+        return;
+      }
+      console.log('Retrieved Token:', token);
 
+
+      const response = await fetch(`${baseUrl}/api/user/get/profile`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': token ? `Bearer ${token}` : '',
+        },
+    });
+    
+
+      console.log('Response Headers:', response.headers);
+  
+      const data = await response.json();
+  
       if (response.ok) {
-        setUserDetails(data);
+        setUserDetails(data.user); // Adjust according to the API response
       } else {
         Alert.alert('Error', data.message || 'Failed to fetch profile.');
       }
@@ -34,14 +68,14 @@ const Profile = () => {
       setLoading(false);
     }
   };
+  
 
   const handleUpdate = async () => {
     try {
-      const response = await fetch('http://localhost:3000/user/update', {
+      setUpdating(true);
+      const response = await fetch(`${baseUrl}/user/update`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(userDetails),
       });
 
@@ -49,21 +83,45 @@ const Profile = () => {
       if (response.ok) {
         Alert.alert('Success', 'Profile updated successfully!');
       } else {
-        Alert.alert('Error', data.message || 'Failed to update profile');
+        Alert.alert('Error', data.message || 'Failed to update profile.');
       }
     } catch (error) {
-      console.error('Error updating profile:', error);
-      Alert.alert('Error', 'Something went wrong');
+      Alert.alert('Error', 'Something went wrong.');
+    } finally {
+      setUpdating(false);
     }
   };
 
+  const handleLogout = async () => {
+    try {
+      await AsyncStorage.removeItem('access-token');
+      const response = await fetch(`${baseUrl}/api/auth/logout`, {
+        method: 'GET', // or 'GET' depending on your backend
+        credentials: 'include', // Ensures cookies are sent with the request
+      });
+  
+      const data = await response.json();
+  
+      if (response.ok) {
+        Alert.alert('Success', 'Logged out successfully!');
+        navigation.navigate('Login'); // Redirect to login screen
+      } else {
+        Alert.alert('Error', data.message || 'Failed to logout.');
+      }
+    } catch (error) {
+      Alert.alert('Error', 'Something went wrong.');
+    }
+  };
+  
   return (
     <View style={styles.container}>
+      {/* Profile Image & Name */}
       <View style={styles.profileContainer}>
         <Image source={require('../../assets/images/Profile.jpeg')} style={styles.profileImage} />
-        <Text style={styles.profileName}>{userDetails.name}</Text>
+        <Text style={styles.profileName}>{userDetails.name || 'Your Name'}</Text>
       </View>
 
+      {/* User Details Form */}
       <View style={styles.formContainer}>
         <TextInput
           style={styles.input}
@@ -91,13 +149,26 @@ const Profile = () => {
         />
       </View>
 
-      <TouchableOpacity style={styles.updateButton} onPress={handleUpdate}>
-        <Text style={styles.updateButtonText}>Update Profile</Text>
+      {/* Update Profile Button */}
+      <TouchableOpacity 
+        style={[styles.updateButton, updating && styles.disabledButton]} 
+        onPress={handleUpdate}
+        disabled={updating}
+      >
+        {updating ? <ActivityIndicator color="#fff" /> : <Text style={styles.updateButtonText}>Update Profile</Text>}
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.logoutButton} onPress={() => navigation.navigate('Login')}>
-        <Text style={styles.logoutButtonText}>Logout</Text>
+      {/* Logout Button */}
+      <TouchableOpacity 
+        style={[styles.logoutButton, loggingOut && styles.disabledButton]} 
+        onPress={handleLogout}
+        disabled={loggingOut}
+      >
+        {loggingOut ? <ActivityIndicator color="#fff" /> : <Text style={styles.logoutButtonText}>Logout</Text>}
       </TouchableOpacity>
+
+      {/* Loading Indicator */}
+      {loading && <ActivityIndicator size="large" color="#4CAF50" style={styles.loading} />}
     </View>
   );
 };
@@ -109,14 +180,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingTop: 50,
   },
-//   header: {
-//     marginBottom: 20,
-//   },
-//   title: {
-//     fontSize: 28,
-//     fontWeight: 'bold',
-//     color: '#4CAF50',
-//   },
   profileContainer: {
     alignItems: 'center',
     marginBottom: 20,
@@ -166,7 +229,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
+  disabledButton: {
+    opacity: 0.6,
+  },
+  loading: {
+    marginTop: 20,
+  },
 });
 
 export default Profile;
-const [loading, setLoading] = useState(false);
