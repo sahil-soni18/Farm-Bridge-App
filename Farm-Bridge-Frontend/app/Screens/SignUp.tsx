@@ -9,6 +9,16 @@ import {
   TouchableOpacity,
 } from "react-native";
 
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+const saveToken = async (token: string) => {
+    try {
+        await AsyncStorage.setItem('access-token', token);
+    } catch (error) {
+        console.error('Error saving token:', error);
+    }
+};
+
 const SignUpScreen = ({ navigation }: any) => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -25,9 +35,11 @@ const SignUpScreen = ({ navigation }: any) => {
       isFarmer,
       ...(isFarmer && { farm_location: farmLocation, products_grown: productsGrown }),
     };
+
+    const baseUrl = 'http://192.168.29.189:3000'
   
     try {
-      const response = await fetch("http://localhost:3000/api/auth/signup", {
+      const response = await fetch(`${baseUrl}/api/auth/signup`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -42,6 +54,8 @@ const SignUpScreen = ({ navigation }: any) => {
         alert(result.error || "Signup failed! Please try again.");
         return;
       }
+      // Save the access token to AsyncStorage
+      await saveToken(result.access_token);
   
       // Handle successful signup
       alert(result.message || "Signup successful!");

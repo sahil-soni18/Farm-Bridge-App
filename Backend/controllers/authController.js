@@ -65,6 +65,7 @@ export const Signup = async (req, res) => {
                 email,
                 isFarmer,
             },
+            access_token: token,
         });
     } catch (error) {
         console.error("Error during signup:", error);
@@ -80,6 +81,8 @@ export const Signup = async (req, res) => {
 
 export const Login = async (req, res) => {
     const { email, password } = req.body;
+    console.log(`Email: ${email}`);
+    console.log(`Password: ${password}`);
 
     try {
         const user = await User.findOne({ where: { email } });
@@ -88,6 +91,7 @@ export const Login = async (req, res) => {
         }
 
         const isMatch = await bcrypt.compare(password, user.password);
+        console.log(`isMatch: ${isMatch}`)
         if (!isMatch) {
             return res.status(400).json({ error: "Invalid credentials!" });
         }
@@ -106,6 +110,7 @@ export const Login = async (req, res) => {
                 email: user.email,
                 isFarmer: user.isFarmer,
             },
+            access_token: token,
         });
 
     } catch (error) {

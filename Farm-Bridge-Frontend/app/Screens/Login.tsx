@@ -8,6 +8,17 @@ import {
   Alert,
 } from 'react-native';
 
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+const saveToken = async (token: string) => {
+    try {
+        await AsyncStorage.setItem('access-token', token);
+        console.log('Token saved successfully');
+    } catch (error) {
+        console.error('Error saving token:', error);
+    }
+};
+
 const LoginScreen = ({ navigation }: any) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -18,21 +29,26 @@ const LoginScreen = ({ navigation }: any) => {
       return;
     }
 
+    const baseUrl = 'http://192.168.29.189:3000'
     try {
-      const response = await fetch('http://localhost:3000/api/auth/login', {
+      const response = await fetch(`${baseUrl}/api/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ email, password }),
       });
+      console.log(`response = ${JSON.stringify(response)}`)
 
       const result = await response.json();
+      console.log(`result = ${JSON.stringify(result)}`)
 
-      if (!result.ok) {
+      if (!response.ok) {
         Alert.alert('Error', 'Invalid email or password');
         return;
       }
+      
+      await saveToken(result.access_token); // save the token to the device storage
 
       Alert.alert('Success', 'Login successful');
       navigation.navigate('Home'); 
