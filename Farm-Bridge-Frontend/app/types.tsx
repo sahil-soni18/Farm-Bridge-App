@@ -5,7 +5,7 @@ export type RootStackParamList = {
   Admin: undefined;  // Admin screen, no parameters expected
   Product: { category?: string }; // Product screen, optional 'category' parameter
   ExploreProducts: undefined;
-  ProductDetails: { productId: string }; // Product details screen, requires 'productId' parameter
+  ProductDetails: { productId?: string }; // Product details screen, requires 'productId' parameter
   Cart: undefined;
   Profile: undefined;  // Profile screen, no parameters expected
   OrderHistory: undefined;

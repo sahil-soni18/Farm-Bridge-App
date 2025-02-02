@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet, ScrollView, ActivityIndicator, Alert } from 'react-native';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import axios from 'axios';
+import { getToken } from '../Utils/secureStore.js';
 
 type Product = {
   id: string;
@@ -13,21 +14,31 @@ type Product = {
   image: string;
 };
 
+const baseUrl = 'http://192.168.29.189:3000';
+
 const ProductDetailsScreen: React.FC = () => {
   const route = useRoute<RouteProp<{ params: { productId: string } }, 'params'>>();
   const productId = route.params.productId;
-
+  console.log( `ProductId: ${productId}` );
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
+  const [quantity, setQuantity] = useState<number>(1); // Default to 1
 
   // Fetch Product Details
   const fetchProductDetails = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`http://localhost:3000/product/id/update/:productId/myProducts/get-all/get-product/category/:category`, { withCredentials: true });
+      const token = await getToken();
+      const response = await axios.get(`${baseUrl}/produce/products/${productId}`, {
+        headers: {
+          'Authorization': token ? `Bearer ${token}` : '',
+        },
+      });
+
+      console.log(`Response: ${JSON.stringify(response)}`)
 
       if (response.status === 200) {
-        setProduct(response.data.product);
+        setProduct(response.data);
       } else {
         Alert.alert('Error', 'Failed to load product details.');
       }
@@ -49,9 +60,26 @@ const ProductDetailsScreen: React.FC = () => {
 
   const handleOrder = async () => {
     try {
-      const response = await axios.post(`http://localhost:3000/api/orders`, {
-        productId: product?.id,
-        quantity: 1, // You can allow the user to select quantity
+      setLoading(true);
+      const token = await getToken();
+
+      // Create the order data using the selected quantity
+      const orderData = {
+        items: [
+          {
+            product_id: product?.id,
+            name: product?.name,
+            quantity: quantity, // Use the quantity from state
+            price: product?.price,
+          },
+        ],
+        total_price: product ? product.price * quantity : 0, // Multiply price by quantity
+      };
+
+      const response = await axios.post(`${baseUrl}/orders/create-order`, orderData, {
+        headers: {
+          'Authorization': token ? `Bearer ${token}` : '',
+        },
       });
 
       if (response.status === 201) {
@@ -62,6 +90,8 @@ const ProductDetailsScreen: React.FC = () => {
     } catch (error) {
       console.error('Error placing order:', error);
       Alert.alert('Error', 'Could not place order.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -89,6 +119,23 @@ const ProductDetailsScreen: React.FC = () => {
         </View>
 
         <Text style={styles.sellerDetails}>Seller: {product.seller}</Text>
+      </View>
+
+      {/* Quantity Selector */}
+      <View style={styles.quantityContainer}>
+        <TouchableOpacity 
+          onPress={() => setQuantity(prev => prev > 1 ? prev - 1 : 1)} // Decrease quantity
+          style={styles.quantityButton}>
+          <Text style={styles.quantityButtonText}>-</Text>
+        </TouchableOpacity>
+        
+        <Text style={styles.quantityText}>{quantity}</Text>
+        
+        <TouchableOpacity 
+          onPress={() => setQuantity(prev => prev + 1)} // Increase quantity
+          style={styles.quantityButton}>
+          <Text style={styles.quantityButtonText}>+</Text>
+        </TouchableOpacity>
       </View>
 
       {/* Action Buttons */}
@@ -158,6 +205,12 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginTop: 16,
   },
+  quantityContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginVertical: 16,
+  },
   negotiateButton: {
     backgroundColor: '#ffaa00',
     paddingVertical: 12,
@@ -175,6 +228,24 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#fff',
     textAlign: 'center',
+  },
+  quantityButton: {
+    backgroundColor: '#444',
+    padding: 10,
+    borderRadius: 5,
+    marginHorizontal: 5,
+  },
+  quantityText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#fff',
+    textAlign: 'center',
+    marginHorizontal: 10,
+  },
+  quantityButtonText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#fff',
   },
   loader: {
     marginTop: 50,
