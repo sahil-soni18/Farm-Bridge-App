@@ -186,8 +186,6 @@
 
 // export default Home;
 
-
-
 import React, { useState } from 'react';
 import { StyleSheet, View, Text, TextInput, FlatList, TouchableOpacity, Image, Dimensions } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
@@ -195,11 +193,10 @@ import { RootStackParamList } from '../types';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 
-
 const categories = [
-  { id: '1', name: 'Fruits', image: require('../../assets/images/Fruits.jpeg'), screen: 'Product', category: 'Fruits' },
-  { id: '2', name: 'Vegetables', image: require('../../assets/images/Vegies.jpeg'), screen: 'Product', category: 'Vegetables' },
-  { id: '3', name: 'Grains', image: require('../../assets/images/Grains.jpeg'), screen: 'Product', category: 'Grains' },
+  { id: '1', name: 'Fruits', image: require('../../assets/images/Fruits.jpeg'), screen: 'Product', category: 'Fruit' },
+  { id: '2', name: 'Vegetables', image: require('../../assets/images/Vegies.jpeg'), screen: 'Product', category: 'Vegetable' },
+  { id: '3', name: 'Grains', image: require('../../assets/images/Grains.jpeg'), screen: 'Product', category: 'Grain' },
   { id: '4', name: 'Dairy', image: require('../../assets/images/Dairy.jpeg'), screen: 'Product', category: 'Dairy' },
 ] as const;
 
@@ -250,7 +247,7 @@ const Home = () => {
         renderItem={({ item }) => (
           <TouchableOpacity
             style={styles.categoryCard}
-            onPress={() => navigation.navigate(item.screen, { category: item.category })}
+            onPress={() => navigation.navigate('Product', { category: item.category })}
           >
             <Image source={item.image} style={styles.categoryImage} />
             <Text style={styles.categoryText}>{item.name}</Text>

@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 import {
   StyleSheet,
   View,
@@ -12,17 +12,21 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import axios from 'axios';
 import { RootStackParamList } from '../types';
+import { getToken } from '../Utils/secureStore.js';
+
+const baseUrl = 'http://192.168.29.189:3000';
 
 const AdminScreen = () => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  
+
   const [productName, setProductName] = useState('');
   const [productDescription, setProductDescription] = useState('');
   const [productPrice, setProductPrice] = useState('');
   const [productQuantity, setProductQuantity] = useState('');
-  const [productCategory, setProductCategory] = useState('Fruits');
+  const [productCategory, setProductCategory] = useState('Fruit');
 
-  const categories = ['Fruits', 'Vegetables', 'Grains', 'Dairy'];
+  // Correct category names based on backend expectations
+  const categories = ['Fruit', 'Vegetable', 'Grain', 'Dairy'];
 
   const handleAddProduct = async () => {
     if (!productName || !productDescription || !productPrice || !productQuantity || !productCategory) {
@@ -33,23 +37,29 @@ const AdminScreen = () => {
     const newProduct = {
       name: productName,
       description: productDescription,
-      price: parseFloat(productPrice),
-      quantity: parseInt(productQuantity),
+      price: Number(productPrice), // Ensure price is a number
+      quantity: Number(productQuantity), // Ensure quantity is a number
       category: productCategory,
     };
 
     try {
-      const response = await axios.post('http://localhost:3000/products/create', newProduct, {
-        withCredentials: true,
+      const token = await getToken();
+      const response = await axios.post(`${baseUrl}/produce/create`, newProduct, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': token ? `Bearer ${token}` : '',
+        },
       });
 
       if (response.status === 201) {
         Alert.alert('Success', 'Product added successfully!');
+
+        // Reset input fields after successful addition
         setProductName('');
         setProductDescription('');
         setProductPrice('');
         setProductQuantity('');
-        setProductCategory('Fruits');
+        setProductCategory('Fruit');
       } else {
         Alert.alert('Error', 'Failed to add product');
       }
@@ -64,6 +74,7 @@ const AdminScreen = () => {
       <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
         <Text style={styles.backButtonText}>← Back</Text>
       </TouchableOpacity>
+
       <Text style={styles.title}>Kisan Dwar</Text>
 
       <Text style={styles.label}>Product Name</Text>
@@ -81,7 +92,11 @@ const AdminScreen = () => {
       <Text style={styles.label}>Product Category</Text>
       <View style={styles.categoryContainer}>
         {categories.map((category) => (
-          <TouchableOpacity key={category} style={[styles.categoryButton, productCategory === category && styles.selectedCategoryButton]} onPress={() => setProductCategory(category)}>
+          <TouchableOpacity
+            key={category}
+            style={[styles.categoryButton, productCategory === category && styles.selectedCategoryButton]}
+            onPress={() => setProductCategory(category)}
+          >
             <Text style={[styles.categoryButtonText, productCategory === category && styles.selectedCategoryButtonText]}>
               {category}
             </Text>
@@ -95,7 +110,6 @@ const AdminScreen = () => {
     </ScrollView>
   );
 };
-
 const styles = StyleSheet.create({
   container: { flexGrow: 1, backgroundColor: '#121212', paddingHorizontal: 20, paddingTop: 50, paddingBottom: 40 },
   backButton: { alignSelf: 'flex-start', marginBottom: 20 },

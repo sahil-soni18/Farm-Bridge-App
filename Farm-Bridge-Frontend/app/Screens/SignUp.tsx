@@ -9,16 +9,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
-const saveToken = async (token: string) => {
-    try {
-        await AsyncStorage.setItem('access-token', token);
-    } catch (error) {
-        console.error('Error saving token:', error);
-    }
-};
-
+import { saveToken } from "../Utils/secureStore";
 const SignUpScreen = ({ navigation }: any) => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");

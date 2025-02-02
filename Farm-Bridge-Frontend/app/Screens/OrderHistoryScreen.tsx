@@ -4,14 +4,26 @@ import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import { RootStackParamList } from '../types';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { getToken } from '../Utils/secureStore.js';
+
+type OrderItem = {
+  _id: string;
+  order_id: string;
+  product_id: string;
+  name: string;
+  quantity: number;
+  price: number;
+};
 
 type Order = {
-  id: string;
-  date: string;
-  items: string[];
-  total: number;
+  _id: string;
+  createdAt: string;
+  items: OrderItem[];
+  total_price: number;
   status: string;
 };
+
+const baseUrl = 'http://192.168.29.189:3000';
 
 const OrderHistory = () => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -21,8 +33,13 @@ const OrderHistory = () => {
   // Fetch Order History from Backend
   const fetchOrders = async () => {
     try {
+      const token = await getToken();
       setLoading(true);
-      const response = await axios.get('http://localhost:3000/orders/user/orders', { withCredentials: true });
+      const response = await axios.get(`${baseUrl}/orders/user/orders`, {
+        headers: {
+          'Authorization': token ? `Bearer ${token}` : '',
+        },
+      });
 
       if (response.status === 200) {
         setOrders(response.data.orders); // Assuming backend sends orders in { orders: [...] }
@@ -44,11 +61,11 @@ const OrderHistory = () => {
   const renderOrderItem = ({ item }: { item: Order }) => (
     <TouchableOpacity
       style={styles.orderCard}
-      onPress={() => navigation.navigate('OrderDetails', { orderId: item.id })}
+      onPress={() => navigation.navigate('OrderDetails', { orderId: item._id })}
     >
-      <Text style={styles.orderDate}>{item.date}</Text>
-      <Text style={styles.orderItems}>{item.items.join(', ')}</Text>
-      <Text style={styles.orderTotal}>Total: ${item.total.toFixed(2)}</Text>
+      <Text style={styles.orderDate}>{new Date(item.createdAt).toLocaleString()}</Text>
+      <Text style={styles.orderItems}>{item.items.map((i) => i.name).join(', ')}</Text>
+      <Text style={styles.orderTotal}>Total: ₹{item.total_price}</Text>
       <Text style={[styles.orderStatus, { color: item.status === 'Delivered' ? '#4CAF50' : '#ff4444' }]}>
         {item.status}
       </Text>
@@ -68,7 +85,7 @@ const OrderHistory = () => {
       ) : (
         <FlatList
           data={orders}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item) => item._id}
           renderItem={renderOrderItem}
           contentContainerStyle={styles.orderList}
         />
@@ -76,7 +93,6 @@ const OrderHistory = () => {
     </View>
   );
 };
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,

@@ -226,8 +226,7 @@
 
 // export default ExploreProductsScreen;
 
-
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -245,11 +244,11 @@ type Product = {
   id: string;
   name: string;
   price: number;
-  image: string;
+  image?: string;
   category: string;
 };
 
-const [products, setProducts] = useState<Product[]>([]);
+const baseUrl = 'http://192.168.29.189:3000';
 
 const ExploreProductsScreen: React.FC = () => {
   const [search, setSearch] = useState('');
@@ -257,48 +256,61 @@ const ExploreProductsScreen: React.FC = () => {
   const [sortOption, setSortOption] = useState<'priceAsc' | 'priceDesc' | null>(null);
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetchProducts();
-  }, []);
+  }, [selectedCategory, sortOption]);
 
   const fetchProducts = async () => {
+    setLoading(true);
+    setError(null);
     try {
-      setLoading(true);
-      const response = await axios.get('http://localhost:3000/product/id/update/:productId/myProducts/get-all/get-product/category/:category');
-      setProducts(response.data.products);
+      const response = await axios.get(`${baseUrl}/produce/get-all`);
+      if (response.data && Array.isArray(response.data)) {
+        setProducts(
+          response.data.map((product) => ({
+            id: product._id,
+            name: product.name,
+            price: parseFloat(product.price),
+            category: product.category,
+            image: product.image || 'https://via.placeholder.com/150', // Placeholder if no image
+          }))
+        );
+      } else {
+        throw new Error('Invalid data format received');
+      }
     } catch (error) {
-      Alert.alert('Error', 'Failed to load products');
+      console.error('Error fetching products:', error);
+      setError('Failed to load products. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
-  const categories = Array.from(new Set(products.map((product: any) => product.category)));
-
-  const filterAndSortProducts = () => {
+  const filterAndSortProducts = useCallback(() => {
     let filteredProducts = [...products];
 
     if (search) {
-      filteredProducts = filteredProducts.filter((product: Product) =>
+      filteredProducts = filteredProducts.filter((product) =>
         product.name.toLowerCase().includes(search.toLowerCase())
       );
     }
 
     if (selectedCategory) {
       filteredProducts = filteredProducts.filter(
-        (product: Product) => product.category === selectedCategory
+        (product) => product.category === selectedCategory
       );
     }
 
-    if (sortOption === 'priceAsc') {
-      filteredProducts.sort((a, b) => a.price - b.price);
-    } else if (sortOption === 'priceDesc') {
-      filteredProducts.sort((a, b) => b.price - a.price);
+    if (sortOption) {
+      filteredProducts = filteredProducts.slice().sort((a, b) =>
+        sortOption === 'priceAsc' ? a.price - b.price : b.price - a.price
+      );
     }
 
     return filteredProducts;
-  };
+  }, [products, search, selectedCategory, sortOption]);
 
   if (loading) {
     return <ActivityIndicator size="large" color="#4CAF50" style={{ marginTop: 50 }} />;
@@ -315,6 +327,8 @@ const ExploreProductsScreen: React.FC = () => {
         value={search}
         onChangeText={setSearch}
       />
+
+      {error && <Text style={styles.errorText}>{error}</Text>}
 
       <FlatList
         data={filterAndSortProducts()}
@@ -359,6 +373,7 @@ const styles = StyleSheet.create({
   productCategory: { fontSize: 14, color: '#aaa' },
   productImage: { width: '100%', height: 150, borderRadius: 8, marginBottom: 8 },
   emptyText: { fontSize: 16, textAlign: 'center', color: '#888' },
+  errorText: { fontSize: 16, color: 'red', textAlign: 'center', marginBottom: 16 },
 });
 
 export default ExploreProductsScreen;

@@ -1,7 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Text, FlatList, Image, ActivityIndicator, Alert, Dimensions } from 'react-native';
+import { StyleSheet, View, Text, FlatList, Image, ActivityIndicator, Alert, Dimensions, TouchableOpacity } from 'react-native';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import axios from 'axios';
+import { getToken } from '../Utils/secureStore.js';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../types.js';
+
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -10,11 +15,16 @@ type Product = {
   name: string;
   price: number;
   image?: string;
+  category: string;
 };
+
+const baseUrl = 'http://192.168.29.189:3000';
 
 const ProductScreen = () => {
   const route = useRoute<RouteProp<{ params: { category: string } }, 'params'>>();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const category = route.params.category;
+  console.log(`Category: ${category}`);
 
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -22,11 +32,38 @@ const ProductScreen = () => {
   // Fetch Products from Backend
   const fetchProducts = async () => {
     try {
+      const token = await getToken();
       setLoading(true);
-      const response = await axios.get(`http://localhost:3000/product/id/update/:productId/myProducts/get-all/get-product/category/:category`, { withCredentials: true });
+      const response = await axios.get(`${baseUrl}/produce/id/myProducts`, {
+        headers: {
+          'Authorization': token ? `Bearer ${token}` : '',
+        },
+      });
 
-      if (response.status === 200) {
-        setProducts(response.data.products); // Assuming backend sends { products: [...] }
+      console.log('Fetched Products:', response.data);
+      console.log(`Response: ${JSON.stringify(response)}`)
+
+      if (response.status == 200) {
+        // Convert `_id` to `id` and filter by category
+        console.log("Inside Response")
+        const filteredProducts = response.data
+        .map((item: any) => ({
+          id: item._id,
+          name: item.name,
+          price: Number(item.price), // Ensure price is a number
+          image: item.image || null,
+          category: item.category, // Add this line
+        }))
+      .filter((item: Product) => item.category === category);
+
+          console.log('Filtered Products:', filteredProducts);
+          console.log(`Filtered Response: ${JSON.stringify(filteredProducts)}`)
+
+          // Set the filtered products to the state
+          setProducts(filteredProducts);
+  
+
+        setProducts(filteredProducts);
       } else {
         Alert.alert('Error', 'Failed to load products.');
       }
@@ -42,25 +79,31 @@ const ProductScreen = () => {
     fetchProducts();
   }, [category]);
 
+  const handleProductClick = (productId: string) => {
+    navigation.navigate('ProductDetails', { productId });
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>{category}</Text>
 
       {loading ? (
         <ActivityIndicator size="large" color="#4CAF50" style={styles.loader} />
+      ) : products.length === 0 ? (
+        <Text style={styles.noProductsText}>No products found in this category.</Text>
       ) : (
         <FlatList
           data={products}
           keyExtractor={(item: Product) => item.id}
           renderItem={({ item }: { item: Product }) => (
-            <View style={styles.productCard}>
+<TouchableOpacity onPress={() => handleProductClick(item.id)} style={styles.productCard}>
               <Image
                 source={item.image ? { uri: item.image } : require('../../assets/images/Placeholder.jpg')}
                 style={styles.productImage}
               />
               <Text style={styles.productName}>{item.name}</Text>
               <Text style={styles.productPrice}>₹{item.price}</Text>
-            </View>
+            </TouchableOpacity>
           )}
           numColumns={2}
           contentContainerStyle={styles.productList}
@@ -69,6 +112,7 @@ const ProductScreen = () => {
     </View>
   );
 };
+
 
 const styles = StyleSheet.create({
   container: {
@@ -119,6 +163,12 @@ const styles = StyleSheet.create({
   },
   loader: {
     marginTop: 50,
+  },
+  noProductsText: {
+    fontSize: 16,
+    color: '#fff',
+    textAlign: 'center',
+    marginTop: 20,
   },
 });
 

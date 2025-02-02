@@ -6,8 +6,7 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import { RootStackParamList } from '../types';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import getToken from "../getToken.js";
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getToken, removeToken } from "../Utils/secureStore.js";
 
 // #TODO:
 // Define the API base URL
@@ -94,7 +93,7 @@ const Profile = () => {
 
   const handleLogout = async () => {
     try {
-      await AsyncStorage.removeItem('access-token');
+      await removeToken();
       const response = await fetch(`${baseUrl}/api/auth/logout`, {
         method: 'GET', // or 'GET' depending on your backend
         credentials: 'include', // Ensures cookies are sent with the request

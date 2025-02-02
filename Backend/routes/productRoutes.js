@@ -1,5 +1,5 @@
 import express from 'express'
-import { createProduct, getAllProducts, getProductById, getProductByCategory, updateProduct, deleteProduct} from '../controllers/productController.js';
+import { createProduct, getAllProducts, getProductById, getProductByCategory, updateProduct, deleteProduct, getProductByProductId } from '../controllers/productController.js';
 import authenticateToken from '../middlewares/authMiddleware.js';
 
 const router = express.Router()
@@ -10,6 +10,7 @@ router.get('/id/myProducts', authenticateToken, getProductById)
 router.get('/get-all', getAllProducts);
 router.get('/get-product/category/:category', getProductByCategory);
 router.delete('/delete-product/id/:productId', authenticateToken, deleteProduct)
+router.get('/products/:productId', getProductByProductId);
 
 
 export default router

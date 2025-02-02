@@ -8,16 +8,7 @@ import {
   Alert,
 } from 'react-native';
 
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
-const saveToken = async (token: string) => {
-    try {
-        await AsyncStorage.setItem('access-token', token);
-        console.log('Token saved successfully');
-    } catch (error) {
-        console.error('Error saving token:', error);
-    }
-};
+import {saveToken} from "../Utils/secureStore.js";
 
 const LoginScreen = ({ navigation }: any) => {
   const [email, setEmail] = useState('');
