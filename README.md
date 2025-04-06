@@ -95,6 +95,9 @@ package-lock.json
    cd Farm-Bridge-Frontend
    ```
    
+
+### **Backend Setup (To Be Added)**
+
    For Backend:
    ```bash
    cd Backend
@@ -105,13 +108,10 @@ package-lock.json
    ```bash
    npm install
    ```
-3. Start the development server:
+  Start the development server:
    ```bash
    npx expo start
    ```
-
-### **Backend Setup (To Be Added)**
-Backend setup instructions will be updated once backend development begins.
 
 ---
 
