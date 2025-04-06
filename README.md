@@ -72,6 +72,12 @@ package-lock.json
 
 ---
 
+### FARM BRIDGE APP WORKFLOW 
+![diagram](https://github.com/user-attachments/assets/7cc03ff8-9f69-49cd-85fe-e795df5988b0)
+
+
+---
+
 ## **Setup Instructions**
 
 ### **Frontend Setup**
