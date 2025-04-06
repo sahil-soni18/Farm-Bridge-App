@@ -83,7 +83,7 @@ package-lock.json
 ### **Frontend Setup**
 1. Clone the repository:
    ```bash
-   git clone https://github.com/<username>/farm-bridge.git
+   git clone https://github.com/thedarkking01/Farm-Bridge-App
    cd farm-bridge
    ```
 
