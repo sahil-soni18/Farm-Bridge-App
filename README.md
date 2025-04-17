@@ -94,6 +94,10 @@ package-lock.json
    ```bash
    cd Farm-Bridge-Frontend
    ```
+3. Start devlopment :
+   ```bash
+   npx expo start
+   ```
    
 
 ### **Backend Setup (To Be Added)**
@@ -110,7 +114,7 @@ package-lock.json
    ```
   Start the development server:
    ```bash
-   npx expo start
+   node index.js
    ```
 
 ---
