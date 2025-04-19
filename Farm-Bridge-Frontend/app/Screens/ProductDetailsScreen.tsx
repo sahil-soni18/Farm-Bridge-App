@@ -14,7 +14,7 @@ type Product = {
   image: string;
 };
 
-const baseUrl = 'http://192.168.29.189:3000';
+const baseUrl = 'http://localhost:3000';
 
 const ProductDetailsScreen: React.FC = () => {
   const route = useRoute<RouteProp<{ params: { productId: string } }, 'params'>>();

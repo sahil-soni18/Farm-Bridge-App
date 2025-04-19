@@ -28,7 +28,8 @@ type Order = {
   status: string;
 };
 
-const baseUrl = 'http://192.168.29.189:3000';
+// const baseUrl = 'http://192.168.1.5:3000';
+const baseUrl = 'http://localhost:3000';
 
 const OrderDetails = ({ route }: OrderDetailsProps) => {
   const { orderId } = route.params;

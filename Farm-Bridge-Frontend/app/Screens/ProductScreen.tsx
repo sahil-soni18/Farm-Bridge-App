@@ -18,7 +18,7 @@ type Product = {
   category: string;
 };
 
-const baseUrl = 'http://192.168.29.189:3000';
+const baseUrl = 'http://localhost:3000';
 
 const ProductScreen = () => {
   const route = useRoute<RouteProp<{ params: { category: string } }, 'params'>>();

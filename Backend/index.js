@@ -14,7 +14,7 @@ const PORT = 3000;
 app.use(express.json());  // Parse JSON bodies
 app.use(
     cors({
-      origin: 'http://192.168.29.189:8081', // Replace with your frontend URL
+      origin: 'http://localhost:8081',
       credentials: true, // Allow credentials (cookies)
     })
   );

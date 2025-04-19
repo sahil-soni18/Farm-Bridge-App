@@ -27,7 +27,8 @@ const SignUpScreen = ({ navigation }: any) => {
       ...(isFarmer && { farm_location: farmLocation, products_grown: productsGrown }),
     };
 
-    const baseUrl = 'http://192.168.29.189:3000'
+    // const baseUrl = 'http://192.168.1.5:3000'
+    const baseUrl = 'http://localhost:3000'
   
     try {
       const response = await fetch(`${baseUrl}/api/auth/signup`, {

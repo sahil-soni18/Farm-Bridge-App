@@ -20,7 +20,7 @@ const LoginScreen = ({ navigation }: any) => {
       return;
     }
 
-    const baseUrl = 'http://192.168.29.189:3000'
+    const baseUrl = 'http://localhost:3000'
     try {
       const response = await fetch(`${baseUrl}/api/auth/login`, {
         method: 'POST',

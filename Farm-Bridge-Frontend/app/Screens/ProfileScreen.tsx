@@ -10,7 +10,7 @@ import { getToken, removeToken } from "../Utils/secureStore.js";
 
 // #TODO:
 // Define the API base URL
-const baseUrl = 'http://192.168.29.189:3000';
+const baseUrl = 'http://localhost:3000';
 
 const Profile = () => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();

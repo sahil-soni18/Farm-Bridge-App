@@ -10,7 +10,7 @@ import sequelize from "../db/db.js";
 export const Signup = async (req, res) => {
     const transaction = await sequelize.transaction();
     const { name, email, password, isFarmer } = req.body;
-
+    
     try {
         const existingUser = await User.findOne({ where: { email } });
         if (existingUser) {
