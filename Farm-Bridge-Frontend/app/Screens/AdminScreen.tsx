@@ -14,8 +14,6 @@ import axios from 'axios';
 import { RootStackParamList } from '../types';
 import { getToken } from '../Utils/secureStore.js';
 
-const baseUrl = 'http://192.168.29.189:3000';
-    // const baseUrl = 'http://192.168.5.147:3000'
 
 
 const AdminScreen = () => {
@@ -46,7 +44,7 @@ const AdminScreen = () => {
 
     try {
       const token = await getToken();
-      const response = await axios.post(`${baseUrl}/produce/create`, newProduct, {
+      const response = await axios.post(`${process.env.BASE_URI}/produce/create`, newProduct, {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': token ? `Bearer ${token}` : '',

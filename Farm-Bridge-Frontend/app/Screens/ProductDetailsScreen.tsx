@@ -14,8 +14,6 @@ type Product = {
   image: string;
 };
 
-const baseUrl = 'http://192.168.29.189:3000';
-    // const baseUrl = 'http://192.168.5.147:3000'
 
 const ProductDetailsScreen: React.FC = () => {
   const route = useRoute<RouteProp<{ params: { productId: string } }, 'params'>>();
@@ -30,7 +28,7 @@ const ProductDetailsScreen: React.FC = () => {
     try {
       setLoading(true);
       const token = await getToken();
-      const response = await axios.get(`${baseUrl}/produce/products/${productId}`, {
+      const response = await axios.get(`${process.env.BASE_URI}/produce/products/${productId}`, {
         headers: {
           'Authorization': token ? `Bearer ${token}` : '',
         },
@@ -77,7 +75,7 @@ const ProductDetailsScreen: React.FC = () => {
         total_price: product ? product.price * quantity : 0, // Multiply price by quantity
       };
 
-      const response = await axios.post(`${baseUrl}/orders/create-order`, orderData, {
+      const response = await axios.post(`${process.env.BASE_URI}/orders/create-order`, orderData, {
         headers: {
           'Authorization': token ? `Bearer ${token}` : '',
         },

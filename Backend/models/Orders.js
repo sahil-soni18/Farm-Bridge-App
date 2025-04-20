@@ -1,6 +1,7 @@
 import sequelize from "../db/db.js";
 import { DataTypes } from "sequelize";
 import User from "./User.js";
+import Payment from "./Payment.js";
 
 const Order = sequelize.define(
   "Order",
@@ -20,12 +21,27 @@ const Order = sequelize.define(
       onDelete: "CASCADE",
     },
     status: {
-      type: DataTypes.ENUM("pending", "confirmed", "shipped", "delivered", "cancelled"),
+      type: DataTypes.ENUM(
+        "pending",
+        "confirmed",
+        "shipped",
+        "delivered",
+        "cancelled"
+      ),
       defaultValue: "pending",
     },
     total_price: {
       type: DataTypes.DECIMAL,
       allowNull: false,
+    },
+    paymentId: {
+      type: DataTypes.UUID,
+      allowNull: true,
+      references: {
+        model: Payment,
+        key: "_id",
+      },
+      onDelete: "CASCADE",
     },
   },
   {
@@ -37,5 +53,12 @@ const Order = sequelize.define(
 
 User.hasMany(Order, { foreignKey: "userId" });
 Order.belongsTo(User, { foreignKey: "userId" });
+
+Order.hasOne(Payment, { foreignKey: "orderId" });
+Payment.belongsTo(Order, { foreignKey: "orderId" });
+
+Order.belongsTo(Payment, { foreignKey: 'paymentId' });
+Payment.hasOne(Order, { foreignKey: 'paymentId' });
+
 
 export default Order;

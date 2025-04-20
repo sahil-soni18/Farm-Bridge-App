@@ -8,10 +8,6 @@ import { RootStackParamList } from '../types';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { getToken, removeToken } from "../Utils/secureStore.js";
 
-// #TODO:
-// Define the API base URL
-const baseUrl = 'http://192.168.29.189:3000';
-    // const baseUrl = 'http://192.168.5.147:3000'
 
 const Profile = () => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -44,7 +40,7 @@ const Profile = () => {
       console.log('Retrieved Token:', token);
 
 
-      const response = await fetch(`${baseUrl}/api/user/get/profile`, {
+      const response = await fetch(`${process.env.BASE_URI}/api/user/get/profile`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -73,7 +69,7 @@ const Profile = () => {
   const handleUpdate = async () => {
     try {
       setUpdating(true);
-      const response = await fetch(`${baseUrl}/user/update`, {
+      const response = await fetch(`${process.env.BASE_URI}/user/update`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(userDetails),
@@ -95,7 +91,7 @@ const Profile = () => {
   const handleLogout = async () => {
     try {
       await removeToken();
-      const response = await fetch(`${baseUrl}/api/auth/logout`, {
+      const response = await fetch(`${process.env.BASE_URI}/api/auth/logout`, {
         method: 'GET', // or 'GET' depending on your backend
         credentials: 'include', // Ensures cookies are sent with the request
       });

@@ -4,9 +4,6 @@ import axios from 'axios';
 import { getToken } from '../Utils/secureStore.js';
 
 
-const baseUrl = 'http://192.168.29.189:3000';
-    // const baseUrl = 'http://192.168.5.147:3000'
-
 const CartScreen = () => {
   interface CartItem {
     _id: string;
@@ -26,7 +23,7 @@ const CartScreen = () => {
     setLoading(true);
     try {
       const token = await getToken();
-      const response = await axios.get(`${baseUrl}/cart/get-cart`, {
+      const response = await axios.get(`${process.env.BASE_URI}/cart/get-cart`, {
         headers: { 'Authorization': token ? `Bearer ${token}` : '' }
       });
       setCart(response.data);
@@ -41,7 +38,7 @@ const CartScreen = () => {
   const addToCart = async (productId: String) => {
     try {
       const token = await getToken();
-      const response = await axios.post(`${baseUrl}/cart/add-to-cart`, { productId, quantity: 1 }, {
+      const response = await axios.post(`${process.env.BASE_URI}/cart/add-to-cart`, { productId, quantity: 1 }, {
         headers: { 'Authorization': token ? `Bearer ${token}` : '' }
       });
       setCart(response.data);
@@ -57,7 +54,7 @@ const CartScreen = () => {
     if (quantity < 1) return;
     try {
       const token = await getToken();
-      const response = await axios.put(`${baseUrl}/cart/update-cart/${cartId}`, { quantity }, {
+      const response = await axios.put(`${process.env.BASE_URI}/cart/update-cart/${cartId}`, { quantity }, {
         headers: { 'Authorization': token ? `Bearer ${token}` : '' }
       });
       setCart(response.data);
@@ -71,7 +68,7 @@ const CartScreen = () => {
   const removeItem = async (cartId: String) => {
     try {
       const token = await getToken();
-      const response = await axios.delete(`${baseUrl}/cart/delete-cart/${cartId}`, {
+      const response = await axios.delete(`${process.env.BASE_URI}/cart/delete-cart/${cartId}`, {
         headers: { 'Authorization': token ? `Bearer ${token}` : '' }
       });
       setCart(response.data);

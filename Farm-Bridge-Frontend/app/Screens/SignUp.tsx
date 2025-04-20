@@ -26,13 +26,9 @@ const SignUpScreen = ({ navigation }: any) => {
       isFarmer,
       ...(isFarmer && { farm_location: farmLocation, products_grown: productsGrown }),
     };
-
-    const baseUrl = 'http://192.168.29.189:3000'
-    // const baseUrl = 'http://192.168.5.147:3000'
-
   
     try {
-      const response = await fetch(`${baseUrl}/api/auth/signup`, {
+      const response = await fetch(`${process.env.BASE_URI}/api/auth/signup`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

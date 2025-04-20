@@ -21,8 +21,6 @@ type Product = {
   category: string;
 };
 
-const baseUrl = 'http://192.168.29.189:3000';
-    // const baseUrl = 'http://192.168.5.147:3000'
 
 
 const ExploreProductsScreen: React.FC = () => {
@@ -41,7 +39,7 @@ const ExploreProductsScreen: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await axios.get(`${baseUrl}/produce/get-all`);
+      const response = await axios.get(`${process.env.BASE_URI}/produce/get-all`);
       if (response.data && Array.isArray(response.data)) {
         setProducts(
           response.data.map((product) => ({

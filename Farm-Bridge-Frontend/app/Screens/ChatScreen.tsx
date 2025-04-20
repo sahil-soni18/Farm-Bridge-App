@@ -19,7 +19,6 @@ type Message = {
     timestamp: string;
 };
 
-const baseUrl = 'http://localhost:3000';
 
 const ChatScreen: React.FC = () => {
 const [messages, setMessages] = useState<Message[]>([]);
@@ -34,7 +33,7 @@ fetchMessages();
 const fetchMessages = async () => {
     setLoading(true);
     try {
-        const response = await axios.get(`${baseUrl}/chat/messages`);
+        const response = await axios.get(`${process.env.BASE_URI}/chat/messages`);
         if (Array.isArray(response.data)) {
         setMessages(response.data);
         }
@@ -59,7 +58,7 @@ const fetchMessages = async () => {
     setInput('');
 
     try {
-        const response = await axios.post(`${baseUrl}/chat/send`, {
+        const response = await axios.post(`${process.env.BASE_URI}/chat/send`, {
             message: input,
         });
 

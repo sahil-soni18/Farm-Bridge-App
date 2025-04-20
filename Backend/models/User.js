@@ -1,6 +1,7 @@
 // Import the built-in data types
 import { DataTypes } from 'sequelize';
 import sequelize from '../db/db.js';
+import Payment from './Payment.js';
 
 const User = sequelize.define(
   'User',
@@ -35,5 +36,7 @@ const User = sequelize.define(
     timestamps: true,
   }
 );
+
+User.hasMany(Payment, { foreignKey: 'userId', onDelete: 'CASCADE' });
 
 export default User;
