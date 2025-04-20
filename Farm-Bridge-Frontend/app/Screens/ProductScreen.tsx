@@ -19,6 +19,7 @@ type Product = {
 };
 
 const baseUrl = 'http://192.168.29.189:3000';
+    // const baseUrl = 'http://192.168.5.147:3000'
 
 const ProductScreen = () => {
   const route = useRoute<RouteProp<{ params: { category: string } }, 'params'>>();
@@ -33,6 +34,7 @@ const ProductScreen = () => {
   const fetchProducts = async () => {
     try {
       const token = await getToken();
+      console.log(`Sending request with token: ${token}`)
       setLoading(true);
       const response = await axios.get(`${baseUrl}/produce/id/myProducts`, {
         headers: {

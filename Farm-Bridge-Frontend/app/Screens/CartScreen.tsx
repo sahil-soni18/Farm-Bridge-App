@@ -3,7 +3,9 @@ import { View, Text, FlatList, Image, TouchableOpacity, StyleSheet, Alert, Activ
 import axios from 'axios';
 import { getToken } from '../Utils/secureStore.js';
 
+
 const baseUrl = 'http://192.168.29.189:3000';
+    // const baseUrl = 'http://192.168.5.147:3000'
 
 const CartScreen = () => {
   interface CartItem {

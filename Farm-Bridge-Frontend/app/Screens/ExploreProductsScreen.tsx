@@ -249,6 +249,8 @@ type Product = {
 };
 
 const baseUrl = 'http://192.168.29.189:3000';
+    // const baseUrl = 'http://192.168.5.147:3000'
+
 
 const ExploreProductsScreen: React.FC = () => {
   const [search, setSearch] = useState('');

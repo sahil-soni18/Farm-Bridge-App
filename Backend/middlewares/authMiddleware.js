@@ -13,6 +13,9 @@ const authenticateToken = async (req, res, next) => {
         console.log(`Secret: ${process.env.ACCESS_TOKEN_SECRET}`);
         const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
         console.log(`Decoded Payload: ${JSON.stringify(decoded)}`);
+        const now = Math.floor(Date.now() / 1000);
+        console.log(`Token Expiration Time: ${decoded.exp}, Current Time: ${now}`);
+
 
         // Use the correct method to find the user by ID
         const user = await User.findByPk(decoded.userId); // Assuming Sequelize
