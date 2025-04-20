@@ -18,7 +18,6 @@ type Product = {
   category: string;
 };
 
-const baseUrl = 'http://localhost:3000';
 
 const ProductScreen = () => {
   const route = useRoute<RouteProp<{ params: { category: string } }, 'params'>>();
@@ -33,15 +32,14 @@ const ProductScreen = () => {
   const fetchProducts = async () => {
     try {
       const token = await getToken();
+      console.log(`Sending request with token: ${token}`)
       setLoading(true);
-      const response = await axios.get(`${baseUrl}/produce/id/myProducts`, {
+      const response = await axios.get(`${process.env.BASE_URI}/produce/id/myProducts`, {
         headers: {
           'Authorization': token ? `Bearer ${token}` : '',
         },
       });
 
-      console.log('Fetched Products:', response.data);
-      console.log(`Response: ${JSON.stringify(response)}`)
 
       if (response.status == 200) {
         // Convert `_id` to `id` and filter by category

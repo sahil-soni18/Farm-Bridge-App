@@ -5,7 +5,6 @@ import User from '../models/User.js'; // Import the User model
 // Create Product
 
 export const createProduct = async (req, res) => {
-    console.log('Creating Product, req.user is: ' + req.user);
   const { userId } = req.user; // Extract userId from authenticated user
   const { name, category, price, quantity, description } = req.body;
 

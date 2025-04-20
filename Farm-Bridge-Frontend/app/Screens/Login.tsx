@@ -20,9 +20,9 @@ const LoginScreen = ({ navigation }: any) => {
       return;
     }
 
-    const baseUrl = 'http://localhost:3000'
+
     try {
-      const response = await fetch(`${baseUrl}/api/auth/login`, {
+      const response = await fetch(`${process.env.BASE_URI}/api/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -28,8 +28,6 @@ type Order = {
   status: string;
 };
 
-// const baseUrl = 'http://192.168.1.5:3000';
-const baseUrl = 'http://localhost:3000';
 
 const OrderDetails = ({ route }: OrderDetailsProps) => {
   const { orderId } = route.params;
@@ -41,7 +39,7 @@ const OrderDetails = ({ route }: OrderDetailsProps) => {
     try {
       const token = await getToken();
       setLoading(true);
-      const response = await axios.get(`${baseUrl}/orders/user/orders`, {
+      const response = await axios.get(`${process.env.BASE_URI}/orders/user/orders`, {
         headers: {
           'Authorization': token ? `Bearer ${token}` : '',
         },

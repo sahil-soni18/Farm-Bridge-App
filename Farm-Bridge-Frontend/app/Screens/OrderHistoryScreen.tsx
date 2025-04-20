@@ -23,7 +23,6 @@ type Order = {
   status: string;
 };
 
-const baseUrl = 'http://localhost:3000';
 
 const OrderHistory = () => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -35,7 +34,7 @@ const OrderHistory = () => {
     try {
       const token = await getToken();
       setLoading(true);
-      const response = await axios.get(`${baseUrl}/orders/user/orders`, {
+      const response = await axios.get(`${process.env.BASE_URI}/orders/user/orders`, {
         headers: {
           'Authorization': token ? `Bearer ${token}` : '',
         },

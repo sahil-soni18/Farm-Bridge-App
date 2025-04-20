@@ -21,7 +21,7 @@ type Product = {
   category: string;
 };
 
-const baseUrl = 'http://localhost:3000';
+
 
 const ExploreProductsScreen: React.FC = () => {
   const [search, setSearch] = useState('');
@@ -39,7 +39,7 @@ const ExploreProductsScreen: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await axios.get(`${baseUrl}/produce/get-all`);
+      const response = await axios.get(`${process.env.BASE_URI}/produce/get-all`);
       if (response.data && Array.isArray(response.data)) {
         setProducts(
           response.data.map((product) => ({

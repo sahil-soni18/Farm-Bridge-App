@@ -7,18 +7,19 @@ import userRouter from './routes/userRoutes.js';
 import productRoutes from './routes/productRoutes.js';
 import orderRoutes from './routes/orderRoutes.js';
 import cartRoutes from './routes/cartRoutes.js';
+import paymentRoutes from './routes/paymentRoutes.js'
 
 const app = express();
 const PORT = 3000;
 
 app.use(express.json());  // Parse JSON bodies
-app.use(
-    cors({
-      origin: 'http://localhost:8081',
-      credentials: true, // Allow credentials (cookies)
-    })
-  );
-  
+app.use(cors({
+    origin: 'http://192.168.29.189:8081',
+    credentials: true,
+    allowedHeaders: ['Authorization', 'Content-Type'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+}));
+
 
 // Testing DB Conncection;
 
@@ -38,6 +39,12 @@ app.use('/api/user', userRouter)
 app.use('/produce', productRoutes);
 app.use('/orders', orderRoutes);
 app.use('/cart', cartRoutes)
+app.use('/payments', paymentRoutes)
+
+app.use((req, res) => {
+    res.status(404).json({ success: false, message: 'API route not found' });
+  });
+  
 
 
 app.listen(PORT, () => {
