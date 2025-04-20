@@ -72,12 +72,18 @@ package-lock.json
 
 ---
 
+### FARM BRIDGE APP WORKFLOW 
+![diagram](https://github.com/user-attachments/assets/7cc03ff8-9f69-49cd-85fe-e795df5988b0)
+
+
+---
+
 ## **Setup Instructions**
 
 ### **Frontend Setup**
 1. Clone the repository:
    ```bash
-   git clone https://github.com/<username>/farm-bridge.git
+   git clone https://github.com/thedarkking01/Farm-Bridge-App
    cd farm-bridge
    ```
 
@@ -88,7 +94,14 @@ package-lock.json
    ```bash
    cd Farm-Bridge-Frontend
    ```
+3. Start devlopment :
+   ```bash
+   npx expo start
+   ```
    
+
+### **Backend Setup (To Be Added)**
+
    For Backend:
    ```bash
    cd Backend
@@ -99,13 +112,10 @@ package-lock.json
    ```bash
    npm install
    ```
-3. Start the development server:
+  Start the development server:
    ```bash
-   npx expo start
+   node index.js
    ```
-
-### **Backend Setup (To Be Added)**
-Backend setup instructions will be updated once backend development begins.
 
 ---
 

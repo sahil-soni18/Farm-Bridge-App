@@ -10,7 +10,8 @@ import ProductDetailsScreen from '../Screens/ProductDetailsScreen';
 import CartScreen from '../Screens/CartScreen';
 import ProfileScreen from '../Screens/ProfileScreen';
 import OrderHistoryScreen from '../Screens/OrderHistoryScreen';
-import OrderDetailsScreen from '../Screens/OrderDetailsScreen'; // Import the OrderDetails screen
+import OrderDetailsScreen from '../Screens/OrderDetailsScreen'; 
+import ChatScreen from '../Screens/ChatScreen';
 
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -27,6 +28,7 @@ const AppNavigator = () => (
     <Stack.Screen name="Profile" component={ProfileScreen} options={{ headerTitle: 'Profile' }}/>
     <Stack.Screen name="OrderHistory" component={OrderHistoryScreen} options={{ headerTitle: 'OrderHistory' }}/>
     <Stack.Screen name="OrderDetails" component={OrderDetailsScreen} options={{ headerTitle: 'OrderDetails' }}/>
+    <Stack.Screen name="ChatScreen" component={ChatScreen} options={{ headerTitle: 'Chat' }}/>
   </Stack.Navigator>
 );
 
