@@ -70,7 +70,7 @@ const ProductDetailsScreen: React.FC = () => {
           {
             product_id: productId,
             name: product?.name,
-            quantity: quantity, // Use the quantity from state
+            quantity: quantity, 
             price: product?.price,
           },
         ],
