@@ -9,6 +9,8 @@ import {
   TouchableOpacity,
 } from "react-native";
 
+import BASE_URI from '../../Environment';
+
 import { saveToken } from "../Utils/secureStore";
 const SignUpScreen = ({ navigation }: any) => {
   const [name, setName] = useState("");
@@ -28,7 +30,7 @@ const SignUpScreen = ({ navigation }: any) => {
     };
   
     try {
-      const response = await fetch(`${process.env.BASE_URI}/api/auth/signup`, {
+      const response = await fetch(`${BASE_URI}/api/auth/signup`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

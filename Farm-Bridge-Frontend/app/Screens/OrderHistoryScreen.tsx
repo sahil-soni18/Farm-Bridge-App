@@ -6,6 +6,8 @@ import { RootStackParamList } from '../types';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { getToken } from '../Utils/secureStore.js';
 
+import BASE_URI from '../../Environment';
+
 type OrderItem = {
   _id: string;
   order_id: string;
@@ -34,7 +36,7 @@ const OrderHistory = () => {
     try {
       const token = await getToken();
       setLoading(true);
-      const response = await axios.get(`${process.env.BASE_URI}/orders/user/orders`, {
+      const response = await axios.get(`${BASE_URI}/orders/user/orders`, {
         headers: {
           'Authorization': token ? `Bearer ${token}` : '',
         },

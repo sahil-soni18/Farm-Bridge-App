@@ -13,6 +13,8 @@ import {
 } from 'react-native';
 import axios from 'axios';
 
+import BASE_URI from '../../Environment';
+
 type Product = {
   id: string;
   name: string;
@@ -39,7 +41,7 @@ const ExploreProductsScreen: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await axios.get(`${process.env.BASE_URI}/produce/get-all`);
+      const response = await axios.get(`${BASE_URI}/produce/get-all`);
       if (response.data && Array.isArray(response.data)) {
         setProducts(
           response.data.map((product) => ({

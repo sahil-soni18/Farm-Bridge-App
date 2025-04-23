@@ -7,6 +7,8 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../types.js';
 
+import BASE_URI from '../../Environment';
+
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -34,7 +36,7 @@ const ProductScreen = () => {
       const token = await getToken();
       console.log(`Sending request with token: ${token}`)
       setLoading(true);
-      const response = await axios.get(`${process.env.BASE_URI}/produce/id/myProducts`, {
+      const response = await axios.get(`${BASE_URI}/produce/id/myProducts`, {
         headers: {
           'Authorization': token ? `Bearer ${token}` : '',
         },
