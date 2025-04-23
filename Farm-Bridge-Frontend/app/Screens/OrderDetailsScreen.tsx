@@ -33,7 +33,8 @@ type Order = {
 
 const OrderDetails: React.FC = () => {
     const route = useRoute<RouteProp<{ params: { orderId: string } }, 'params'>>();
-  const  orderId  = route.params.orderId;
+  // const  orderId  = route.params.orderId;
+  const orderId = route.params?.orderId;
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
 

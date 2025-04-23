@@ -3,6 +3,10 @@ import OrderItem from "../models/OrderItem.js";
 import Product from "../models/Product.js";
 import sequelize from "../db/db.js";
 
+
+
+
+
 export const createOrder = async (req, res) => {
   const transaction = await sequelize.transaction();
   try {

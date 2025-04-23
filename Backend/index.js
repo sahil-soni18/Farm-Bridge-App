@@ -14,7 +14,8 @@ const PORT = 3000;
 
 app.use(express.json());  // Parse JSON bodies
 app.use(cors({
-    origin: 'http://192.168.29.189:8081',
+    // origin: 'http://192.168.29.189:8081',
+    origin: 'http://192.168.1.6:8081',
     credentials: true,
     allowedHeaders: ['Authorization', 'Content-Type'],
     methods: ['GET', 'POST', 'PUT', 'DELETE'],

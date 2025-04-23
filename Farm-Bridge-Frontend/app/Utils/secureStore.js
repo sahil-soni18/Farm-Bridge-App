@@ -27,3 +27,31 @@ export const removeToken = async () => {
         console.error('Error deleting token from SecureStore:', error);
     }
 }
+
+
+// export const saveToken = (token) => {
+//   try {
+//     localStorage.setItem('access-token', token);
+//     console.log('Token saved successfully in localStorage');
+//   } catch (error) {
+//     console.error('Error saving token in localStorage:', error);
+//   }
+// };
+
+// export const getToken = () => {
+//   try {
+//     return localStorage.getItem('access-token');
+//   } catch (error) {
+//     console.error('Error fetching token from localStorage:', error);
+//     return null;
+//   }
+// };
+
+// export const removeToken = () => {
+//   try {
+//     localStorage.removeItem('access-token');
+//     console.log('Token removed successfully from localStorage');
+//   } catch (error) {
+//     console.error('Error deleting token from localStorage:', error);
+//   }
+// };
