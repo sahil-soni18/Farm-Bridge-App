@@ -68,7 +68,7 @@ const ProductDetailsScreen: React.FC = () => {
       const orderData = {
         items: [
           {
-            product_id: product?.id,
+            product_id: productId,
             name: product?.name,
             quantity: quantity, // Use the quantity from state
             price: product?.price,
