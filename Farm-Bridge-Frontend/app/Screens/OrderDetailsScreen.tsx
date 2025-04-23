@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator, Alert } from 'react-native';
-import { RouteProp } from '@react-navigation/native';
+import { RouteProp, useRoute } from '@react-navigation/native';
 import axios from 'axios';
 import { RootStackParamList } from '../types';
 import { getToken } from "../Utils/secureStore.js";
+
+import BASE_URI from '../../Environment';
 
 type OrderDetailsRouteProp = RouteProp<RootStackParamList, 'OrderDetails'>;
 
@@ -13,7 +15,7 @@ interface OrderDetailsProps {
 
 type OrderItem = {
   _id: string;
-  order_id: string;
+  orderId?: string;
   product_id: string;
   name: string;
   quantity: number;
@@ -29,8 +31,9 @@ type Order = {
 };
 
 
-const OrderDetails = ({ route }: OrderDetailsProps) => {
-  const { orderId } = route.params;
+const OrderDetails: React.FC = () => {
+    const route = useRoute<RouteProp<{ params: { orderId: string } }, 'params'>>();
+  const  orderId  = route.params.orderId;
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -39,7 +42,7 @@ const OrderDetails = ({ route }: OrderDetailsProps) => {
     try {
       const token = await getToken();
       setLoading(true);
-      const response = await axios.get(`${process.env.BASE_URI}/orders/user/orders`, {
+      const response = await axios.get(`${BASE_URI}/orders/user/orders`, {
         headers: {
           'Authorization': token ? `Bearer ${token}` : '',
         },
@@ -47,13 +50,17 @@ const OrderDetails = ({ route }: OrderDetailsProps) => {
 
       if (response.status === 200) {
         // Find the order matching the orderId
-        const orderData = response.data.orders.find(
-          (order: Order) => order._id === orderId
-        );
-        if (orderData) {
-          setOrder(orderData);
-        } else {
-          Alert.alert('Error', 'Order not found.');
+
+        if ( orderId !== undefined) {
+
+          const orderData = response.data.orders.find(
+            (order: Order) => order?._id === orderId || 0
+          );
+          if (orderData) {
+            setOrder(orderData);
+          } else {
+            Alert.alert('Error', 'Order not found.');
+          }
         }
       } else {
         Alert.alert('Error', 'Failed to load order details.');
@@ -78,7 +85,7 @@ const OrderDetails = ({ route }: OrderDetailsProps) => {
         <ActivityIndicator size="large" color="#4CAF50" style={styles.loader} />
       ) : order ? (
         <>
-          <Text style={styles.text}>Order ID: {order._id}</Text>
+          <Text style={styles.text}>Order ID: {order?._id}</Text>
           <Text style={styles.text}>Date: {new Date(order.createdAt).toLocaleString()}</Text>
           <Text style={styles.text}>Total: ₹{order.total_price}</Text>
           <Text
@@ -91,11 +98,11 @@ const OrderDetails = ({ route }: OrderDetailsProps) => {
           </Text>
 
           <Text style={styles.subtitle}>Items:</Text>
-          {order.items.map((item) => (
-            <View key={item._id} style={styles.itemContainer}>
-              <Text style={styles.text}>Name: {item.name}</Text>
-              <Text style={styles.text}>Quantity: {item.quantity}</Text>
-              <Text style={styles.text}>Price: ₹{item.price}</Text>
+          {order?.items.map((item) => (
+            <View key={item?._id} style={styles.itemContainer}>
+              <Text style={styles.text}>Name: {item?.name}</Text>
+              <Text style={styles.text}>Quantity: {item?.quantity}</Text>
+              <Text style={styles.text}>Price: ₹{item?.price}</Text>
             </View>
           ))}
         </>

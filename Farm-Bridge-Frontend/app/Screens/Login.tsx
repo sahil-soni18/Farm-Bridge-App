@@ -9,6 +9,9 @@ import {
 } from 'react-native';
 
 import {saveToken} from "../Utils/secureStore.js";
+import Config from 'react-native-config';
+import BASE_URI from '../../Environment';
+
 
 const LoginScreen = ({ navigation }: any) => {
   const [email, setEmail] = useState('');
@@ -20,9 +23,11 @@ const LoginScreen = ({ navigation }: any) => {
       return;
     }
 
+    console.log(`base url: ${BASE_URI}`)
+
 
     try {
-      const response = await fetch(`${process.env.BASE_URI}/api/auth/login`, {
+      const response = await fetch(`${BASE_URI}/api/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -12,6 +12,8 @@ import {
 } from 'react-native';
 import axios from 'axios';
 
+import BASE_URI from '../../Environment';
+
 type Message = {
     id: string;
     sender: 'user' | 'bot';
@@ -33,7 +35,7 @@ fetchMessages();
 const fetchMessages = async () => {
     setLoading(true);
     try {
-        const response = await axios.get(`${process.env.BASE_URI}/chat/messages`);
+        const response = await axios.get(`${BASE_URI}/chat/messages`);
         if (Array.isArray(response.data)) {
         setMessages(response.data);
         }
@@ -58,7 +60,7 @@ const fetchMessages = async () => {
     setInput('');
 
     try {
-        const response = await axios.post(`${process.env.BASE_URI}/chat/send`, {
+        const response = await axios.post(`${BASE_URI}/chat/send`, {
             message: input,
         });
 
@@ -145,6 +147,8 @@ const styles = StyleSheet.create({
         alignSelf: 'flex-end',
         borderColor: '#4CAF50',
         borderWidth: 1,
+        marginRight: 10,
+        width: 125
     },
     botMessage: {
         backgroundColor: '#2C2C2C',

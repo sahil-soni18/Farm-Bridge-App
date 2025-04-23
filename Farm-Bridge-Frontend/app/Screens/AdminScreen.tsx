@@ -14,6 +14,8 @@ import axios from 'axios';
 import { RootStackParamList } from '../types';
 import { getToken } from '../Utils/secureStore.js';
 
+import BASE_URI from '../../Environment';
+
 
 
 const AdminScreen = () => {
@@ -44,7 +46,7 @@ const AdminScreen = () => {
 
     try {
       const token = await getToken();
-      const response = await axios.post(`${process.env.BASE_URI}/produce/create`, newProduct, {
+      const response = await axios.post(`${BASE_URI}/produce/create`, newProduct, {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': token ? `Bearer ${token}` : '',
