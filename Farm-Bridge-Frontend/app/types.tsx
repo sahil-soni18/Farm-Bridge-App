@@ -9,6 +9,6 @@ export type RootStackParamList = {
   Cart: undefined;
   Profile: undefined;  // Profile screen, no parameters expected
   OrderHistory: undefined;
-  OrderDetails: { orderId: string };
+  OrderDetails: { orderId?: string };
   ChatScreen: undefined;
 };

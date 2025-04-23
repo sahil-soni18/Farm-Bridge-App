@@ -4,6 +4,8 @@ import { RouteProp, useRoute } from '@react-navigation/native';
 import axios from 'axios';
 import { getToken } from '../Utils/secureStore.js';
 
+import BASE_URI from '../../Environment';
+
 type Product = {
   id: string;
   name: string;
@@ -28,7 +30,7 @@ const ProductDetailsScreen: React.FC = () => {
     try {
       setLoading(true);
       const token = await getToken();
-      const response = await axios.get(`${process.env.BASE_URI}/produce/products/${productId}`, {
+      const response = await axios.get(`${BASE_URI}/produce/products/${productId}`, {
         headers: {
           'Authorization': token ? `Bearer ${token}` : '',
         },
@@ -75,7 +77,7 @@ const ProductDetailsScreen: React.FC = () => {
         total_price: product ? product.price * quantity : 0, // Multiply price by quantity
       };
 
-      const response = await axios.post(`${process.env.BASE_URI}/orders/create-order`, orderData, {
+      const response = await axios.post(`${BASE_URI}/orders/create-order`, orderData, {
         headers: {
           'Authorization': token ? `Bearer ${token}` : '',
         },
