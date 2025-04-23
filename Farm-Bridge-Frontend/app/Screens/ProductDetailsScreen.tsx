@@ -68,13 +68,13 @@ const ProductDetailsScreen: React.FC = () => {
       const orderData = {
         items: [
           {
-            product_id: product?.id,
+            product_id: productId,
             name: product?.name,
-            quantity: quantity, // Use the quantity from state
+            quantity: quantity, 
             price: product?.price,
           },
         ],
-        total_price: product ? product.price * quantity : 0, // Multiply price by quantity
+        total_price: product ? product.price * quantity : 0, 
       };
 
       const response = await axios.post(`${BASE_URI}/orders/create-order`, orderData, {

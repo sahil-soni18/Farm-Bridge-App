@@ -9,6 +9,9 @@ export const createOrder = async (req, res) => {
     const { userId } = req.user;
     const { items, total_price } = req.body;
 
+    console.log(`req.body: ${JSON.stringify(req.body)}, ${userId}`)
+
+
     // Validate stock and prepare order items
     const orderItems = await Promise.all(
       items.map(async (item) => {
