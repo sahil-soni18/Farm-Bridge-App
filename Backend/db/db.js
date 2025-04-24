@@ -31,7 +31,7 @@
 
 import { Sequelize } from 'sequelize';
 
-const sequelize = new Sequelize('farmbridge_app', 'postgres', 'myPostgres', {
+const sequelize = new Sequelize('farmbridge_app', 'postgres', 'Sany@1205', {
   host: 'localhost',
   dialect: 'postgres',
 });

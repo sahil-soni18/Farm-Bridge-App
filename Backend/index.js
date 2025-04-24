@@ -8,6 +8,9 @@ import productRoutes from './routes/productRoutes.js';
 import orderRoutes from './routes/orderRoutes.js';
 import cartRoutes from './routes/cartRoutes.js';
 import paymentRoutes from './routes/paymentRoutes.js'
+import dotenv from "dotenv";
+dotenv.config();
+
 
 const app = express();
 const PORT = 3000;
@@ -15,7 +18,7 @@ const PORT = 3000;
 app.use(express.json());  // Parse JSON bodies
 app.use(cors({
     // origin: 'http://192.168.29.189:8081',
-    origin: 'http://192.168.1.6:8081',
+    origin: 'http://192.168.31.129:8081',
     credentials: true,
     allowedHeaders: ['Authorization', 'Content-Type'],
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
