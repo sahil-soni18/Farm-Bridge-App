@@ -11,12 +11,14 @@ import CartScreen from '../Screens/CartScreen';
 import ProfileScreen from '../Screens/ProfileScreen';
 import OrderHistoryScreen from '../Screens/OrderHistoryScreen';
 import OrderDetailsScreen from '../Screens/OrderDetailsScreen'; 
+import OrderStatusScreen from '../Screens/OrderStatusScreen';
 import ChatScreen from '../Screens/ChatScreen';
+import PaymentScreen from '../Screens/PaymentScreen';
 
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const AppNavigator = () => (
-  <Stack.Navigator initialRouteName="OrderDetails">
+  <Stack.Navigator initialRouteName="Login">
     <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
     <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
     <Stack.Screen name="Admin" component={AdminScreen} options={{ headerShown: false }} />
@@ -28,7 +30,9 @@ const AppNavigator = () => (
     <Stack.Screen name="Profile" component={ProfileScreen} options={{ headerTitle: 'Profile' }}/>
     <Stack.Screen name="OrderHistory" component={OrderHistoryScreen} options={{ headerTitle: 'OrderHistory' }}/>
     <Stack.Screen name="OrderDetails" component={OrderDetailsScreen} options={{ headerTitle: 'OrderDetails' }}/>
+    <Stack.Screen name="OrderStatus" component={OrderStatusScreen} options={{ headerTitle: 'Order Status' }}/>
     <Stack.Screen name="ChatScreen" component={ChatScreen} options={{ headerTitle: 'Chat' }}/>
+    <Stack.Screen name="Payment" component={PaymentScreen} options={{ headerTitle: 'Payment' }}/>
   </Stack.Navigator>
 );
 

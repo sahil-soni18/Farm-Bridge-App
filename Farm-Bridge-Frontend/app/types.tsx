@@ -11,4 +11,6 @@ export type RootStackParamList = {
   OrderHistory: undefined;
   OrderDetails: { orderId?: string };
   ChatScreen: undefined;
+  OrderStatus: { orderId?: string }; // Order status screen, requires 'orderId' parameter
+  Payment: undefined; // Payment screen, no parameters expected
 };
